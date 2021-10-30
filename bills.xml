@@ -1,0 +1,90 @@
+﻿<WndTap Name="bill" Text="帐务处理">
+	<var name="hotelid" expr="0"/>
+	<var name="rmtpChg" expr="0"/>
+	<Ctrls>
+		<GroupBox Name="GroupBox1" Visible="true" Enabled="true" Text="帐务信息"><Ctrls>
+		<Label Name="lb_custName" Visible="true" Enabled="true" Size="50,20" Text="客人姓名"/>
+		<TextBox Name="TB_custName" Visible="true" Enabled="true" ReadOnly="false" Size="60,20" Text="">
+			<DbDetails>
+				<DbTable>creator.ctu_user as u left join creator.ctu_vip as v on u.user_id=v.userid left join creator.ctu_viplevel as l on v.viplevel=l.id</DbTable>
+				<Where>where user_id=%{TB_code_user}</Where>
+				<queryFormat>select u.user_login,v.viplevel,l.nameCN,l.discount from %{dbtable} %{where}</queryFormat> 
+				</DbDetails>
+			</TextBox>
+		<TAB/>
+		<Label Name="lb_roomno" Visible="true" Enabled="true" Size="50,20" Text="房间号"/>
+		<ComboBox Name="CB_roomAvlb" Visible="true" Enabled="true" Size="60,100" Type="3" SelectedIndex="0">
+			<DbDetails>
+			<queryFormat>select roomno,roomid,getRoomPrice(%{CB_roomTpye[roomtypeid]},CURDATE()) as price,description from creator.ctu_rooms where roomtypeid=%{CB_roomTpye[roomtypeid]}</queryFormat> 
+			</DbDetails>
+			<OnSELENDOK><DbDetails/><submit namelist="DbDetails" next="CB_roomTpye"/></OnSELENDOK>
+			</ComboBox>
+		<TAB/>
+		<Label Name="lb_name" Visible="true" Enabled="true" Size="50,20" Text="房间类型"/>
+		<ComboBox Name="CB_roomTpye" Visible="true" Enabled="true" Size="100,100" Type="3" SelectedIndex="-1">
+			<DbDetails>
+			<queryFormat>select roomtype,roomtypeid from creator.ctu_roomtype where hotel_id=%{hotelid}</queryFormat> 
+			</DbDetails>
+			<OnSELENDOK><if cond="%{rmtplst[checkedout_dt]}==''"><if cond="%{CB_roomTpye}">
+				<DbDetails/><submit next="CB_roomAvlb" namelist="DbDetails" method="post"/></if>
+				<else/><submit next="CB_roomAvlb" method="post" function="resetcontent"/></if>
+				</OnSELENDOK>
+				</ComboBox>
+		<Label Name="lb_payStatus" Visible="true" Enabled="true" Size="50,20" Text="支付状态"/>
+		<TextBox Name="TB_payStatus" Visible="true" Enabled="true" ReadOnly="false" Size="60,20" Text="">
+			</TextBox>
+		<TextBox Name="TB_code_bookin" Visible="false" Enabled="true" ReadOnly="false" Size="1,20" Text="">
+			<OnEnChange><if cond="%{TB_code_bookin}">
+				<DbDetails/><submit next="TB_custName" namelist="DbDetails" method="post"/></if></OnEnChange></TextBox>       
+		<TextBox Name="TB_code_resv" Visible="true" Enabled="true" ReadOnly="false" Size="30,20" Text="">
+			<OnEnChange></OnEnChange></TextBox>       
+		<TextBox Name="TB_code_user" Visible="true" Enabled="true" ReadOnly="false" Size="30,20" Text=""/>
+		<TAB/>
+		<BR/>
+		<Label Name="lb_demand" Visible="true" Enabled="true" Size="50,20" Text="入住时间"/>
+		<DateTime Name="DtStart" Visible="true" Enabled="true" Format="yyyy-MM-dd HH:mm" Size="120,20"/>
+		<Label Name="lb_demand" Visible="true" Enabled="true" Size="50,20" Text="退房时间"/>
+		<DateTime Name="DtEnd" Visible="true" Enabled="true" Format="yyyy-MM-dd HH:mm" Size="120,20" Text="4 day"/>
+		<!--BR/>
+		<ListCtrl Name="rmPrDtl" Visible="true" Enabled="true" Size="600,90" Remark="Price Detail list">
+			<DbDetails>
+				<Data>
+				  <Data Dynamic="true">sql:select FROM_UNIXTIME(dt,'%Y-%m-%d') as dt from ctu_roomrates where hotel_id=%{hotelid} and dt between UNIX_TIMESTAMP('%{DtStart}') and UNIX_TIMESTAMP('%{DtEnd}') group by dt;</Data> 
+				  <DataFormat>max(getRoomPrice(roomtp_id,'%{dt}')) as '%{dt}'</DataFormat> 
+				  </Data>
+				<DbTable>ctu_roomrates</DbTable>
+				<Order></Order>
+				<Where>where hotel_id=%{hotelid} and dt between UNIX_TIMESTAMP('%{DtStart}') and UNIX_TIMESTAMP('%{DtEnd}')</Where>
+				<queryFormat>select distinct(roomtp_id) as 序号,max(roomtp_name) as 房型,%{data} from %{dbtable} %{where} group by roomtp_id</queryFormat> 
+			</DbDetails>
+		</ListCtrl-->
+ 		<BR autoheight="1"/><ListCtrl Name="billdetail" Visible="true" Enabled="true" Size="400,200" sumcols="1,2" sum="0,1"
+			Heading="类别,80;金额(借),80;金额(贷),80;备注,160;时间,80;操作员,80">
+			<DbDetails>
+				<DbTable>creator.ctu_billdetails as b inner join creator.ctu_user as u on b.created_by=u.user_id inner join creator.ctu_billtypes as t on t.itemid=b.itemid</DbTable>
+				<Data>itemCN,case b.itype when 0 then expense/100 else '' end as billin,case itype when 0 then '' else expense/100 end as billout,remark,FROM_UNIXTIME(created_dt,'%Y-%m-%d %H:%i') as dt,user_loginname</Data>
+				<Order>order by dt</Order>
+				<queryFormat>select %{data} from %{dbtable} where resvation_id='%{TB_code_resv}' %{where} %{order}</queryFormat> 
+			</DbDetails>
+		</ListCtrl>
+		<GroupBox Name="GroupBoxOp" Visible="true" Enabled="true" Text="操作"><Ctrls>
+		<TextBox Name="TB_deposit" Visible="true" Enabled="true" ReadOnly="false" Size="60,20" tooltip="金额" Number="1"/>
+		<ComboBox Name="CB_billtype" Visible="true" Enabled="true" Size="80,100" Type="3" SelectedIndex="0"
+		OnLoad="sql:select itemCN,itemid,  item, description, sale, price, type from creator.ctu_billtypes"/>
+		<BR/>
+		<Button Name="deposit" Visible="true" Enabled="true" Size="50,20" Text="帐务处理" Clickneedconfirm="true" ToolTip="收银或挂帐">
+			<OnClick><if cond="!%{TB_deposit}"><alert next="deposit" expr="金额不能为空"/>
+			<elseif cond="!%{TB_code_user}"/><alert next="deposit" expr="客人信息不正确"/>
+			<elseif cond="!%{TB_code_resv}"/><alert next="deposit" expr="订单信息不正确"/>
+			<else/><DbDetails><queryFormat>insert into creator.ctu_billdetails (itemid, user_id, resvation_id,hotel_id,expense, itype, created_by, created_dt) values(%{CB_billtype[itemid]},'%{TB_code_user}','%{TB_code_resv}',%{hostels.TB_code},%{TB_deposit}*100,%{CB_billtype[type]},'%{user_id}',UNIX_TIMESTAMP())</queryFormat></DbDetails><submit namelist="DbDetails" method="post"/>
+			<DbDetails/><submit namelist="DbDetails" next="billdetail"/></if></OnClick></Button>
+			</Ctrls></GroupBox>
+		</Ctrls></GroupBox>
+ </Ctrls>
+	<OnActivate>
+		<if cond="'%{session.hotel_id}'&&(%{hotelid}!=%{session.hotel_id})">
+			<assign name="hotelid" expr="%{session.hotel_id}"/>
+			<submit next="CB_roomTpye"/></if>
+			<if cond="%{TB_code_resv}">
+			<DbDetails/><submit next="billdetail" namelist="DbDetails" method="post"/><submit next="TB_custName" namelist="DbDetails" method="post"/></if></OnActivate>
+</WndTap>

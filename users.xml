@@ -1,0 +1,186 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<WndTap Name="users" Text="用户管理">
+	<var name="uiChged" expr="0"/>
+	<var name="ueChged" expr="0"/>
+	<var name="purviewcond" expr=""/>
+	<var name="hotelonly" expr=""/>
+	<var name="hotelonlys" expr=""/>
+	<Ctrls>
+		<GroupBox Name="GroupBox2" Visible="true" Enabled="true" Size="750,100" Text="用户权限管理"><Ctrls>
+		<Label Name="lb_user" Visible="true" Enabled="true" Size="50,20" Text="用户名"/>
+		<ComboBox Name="CB_user" Visible="true" Enabled="true" Size="100,200" Type="3" SelectedIndex="0" OnLoad="init">
+			<DbDetails>
+			<queryFormat>select user_loginname,user_id,user_login,user_email from creator.ctu_user %{where} limit 0,20</queryFormat> 
+			</DbDetails>
+			<OnSELENDOK>
+				<assign name="TB_realname" expr="%{CB_user[user_login]}"/>
+				<assign name="TB_email" expr="%{CB_user[user_email]}"/>
+				</OnSELENDOK>
+			</ComboBox>
+		<TextBox Name="TB_userprefix" Visible="true" Enabled="true" ReadOnly="false" Size="50,20" Text="" tooltip="搜索前缀"/>
+		<Button Name="searchUser" Visible="true" Enabled="true" Size="60,20" Text="搜索用户" tooltip="在搜索前缀框（前面的文本框）里输入要搜索的用户名的前面部分，点击搜索，结果将显示在用户列表中">
+			<OnClick><DbDetails><Where> where user_loginname like '%{TB_userprefix}%'</Where></DbDetails><submit next="CB_user" namelist="DbDetails" method="post"/></OnClick>
+			</Button>
+		<TextBox Name="TB_realname" Visible="true" Enabled="true" ReadOnly="true" Size="80,20" Text="" tooltip="真实姓名"/>
+		<TextBox Name="TB_email" Visible="true" Enabled="true" ReadOnly="true" Size="120,20" Text="" tooltip="电子邮件"/>
+		<ComboBox Name="CB_bizStatus" Visible="true" Enabled="true" Size="60,100" Type="3" Items="禁用|启用" SelectedIndex="0"/>
+		<Button Name="insertR" Visible="true" Enabled="true" Size="50,20" Text="新增用户" Clickneedconfirm="true" tooltip="新增该用户为响应的角色并拥有相应权限">
+			<OnClick><if cond="!%{CB_user[user_id]}"><alert next="insertR" expr="请选择%{lb_user}"/><assign name="break" expr="1"/></if>
+			<if cond="%{purview}!=127"><if cond="!%{CB_hotel[hotel_id]}"><alert next="insertR" expr="请选择%{lb_hotel}"/><assign name="break" expr="1"/></if></if>
+			<if cond="!%{break}"><DbDetails>
+			<Data>(user_id, hotel_id, role_id, biz_status, create_dt, create_by)</Data>
+			<queryFormat>insert into creator.ctu_biz %{data} values('%{CB_user[user_id]}','%{CB_hotel[hotel_id]}','%{CB_role[role_id]}','%{CB_bizStatus[SelectedIndex]}',UNIX_TIMESTAMP(),'%{user_id}')</queryFormat></DbDetails>
+			<submit namelist="DbDetails" method="post"/>
+			<DbDetails/><submit next="userlst" namelist="DbDetails" method="post"/>
+			</if></OnClick></Button>
+		<Button Name="updateR" Visible="true" Enabled="true" Size="50,20" Text="修改用户" Clickneedconfirm="true" tooltip="禁用该用户或取消现有用户的角色及权限并设置新的权限给新的选择的用户">
+			<OnClick><if cond="!%{CB_user[user_id]}"><alert next="insertR" expr="请选择%{lb_user}"/><assign name="break" expr="1"/></if>
+			<if cond="!%{break}"><DbDetails>
+			<queryFormat>update creator.ctu_biz set user_id='%{CB_user[user_id]}',hotel_id='%{CB_hotel[hotel_id]}',role_id='%{CB_role[role_id]}',biz_status='%{CB_bizStatus[SelectedIndex]}',update_dt=UNIX_TIMESTAMP(),update_by='%{user_id}' where biz_id=%{userlst[biz_id]}</queryFormat></DbDetails>
+			<submit namelist="DbDetails" method="post"/>
+			<DbDetails/><submit next="userlst" namelist="DbDetails" method="post"/>
+			</if></OnClick></Button>
+		
+		<BR/><Label Name="lb_hotel" Visible="true" Enabled="true" Size="50,20" Text="门店名"/>
+		<ComboBox Name="CB_hotel" Visible="true" Enabled="true" Size="150,200" Type="3" SelectedIndex="-1">
+			<DbDetails>
+			<queryFormat>select HotelName,hotel_id,manager from creator.ctu_hotels %{hotelonlys} %{where} limit 0,20</queryFormat> 
+			</DbDetails>
+			<OnSELENDOK>
+				<assign name="TB_HotelManager" expr="%{CB_hotel[manager]}"/>
+				</OnSELENDOK>
+			</ComboBox>
+		<TextBox Name="TB_hotelprefix" Visible="true" Enabled="true" ReadOnly="false" Size="50,20" Text="" tooltip="搜索前缀"/>
+		<Button Name="searchHotel" Visible="true" Enabled="true" Size="60,20" Text="搜索门店" tooltip="在搜索前缀框（前面的文本框）里输入要搜索的门店的前面部分，点击搜索，结果将显示在门店列表中">
+			<OnClick><DbDetails><Where> where HotelName like '%{TB_hotelprefix}%'</Where></DbDetails><submit next="CB_hotel" namelist="DbDetails" method="post"/></OnClick>
+			</Button>
+		<TextBox Name="TB_HotelManager" Visible="true" Enabled="true" ReadOnly="true" Size="80,20" Text="" tooltip="门店经理"/>
+		<ComboBox Name="CB_role" Visible="true" Enabled="true" Size="80,200" Type="3" SelectedIndex="-1">
+			<DbDetails>
+			<queryFormat>select name,role_id,grouptype from creator.ctu_bizrole %{purviewcond} </queryFormat> 
+			</DbDetails>
+			<OnSELENDOK>
+				<assign name="TB_rolegrouptype" expr="%{CB_role[grouptype]}"/>
+				</OnSELENDOK>
+			</ComboBox>
+		<TextBox Name="TB_rolegrouptype" Visible="true" Enabled="false" ReadOnly="true" Size="50,20" Text="" tooltip="角色组别"/>
+		<Button Name="SetHotelManager" Visible="true" Enabled="true" Size="60,20" Text="门店总负责" Clickneedconfirm="true"  tooltip="设置该用户为该门店的所有者">
+			<OnClick><if cond="!%{CB_user[user_id]}"><alert next="SetHotelManager" expr="请选择%{lb_user}"/><assign name="break" expr="1"/></if>
+			<if cond="!%{CB_hotel[hotel_id]}"><alert next="SetHotelManager" expr="请选择%{lb_hotel}"/><assign name="break" expr="1"/></if>
+			<if cond="!%{break}"><DbDetails>
+			<queryFormat>update creator.ctu_hotels set manager_id=%{CB_user[user_id]},manager='%{CB_user[user_login]}' where hotel_id=%{CB_hotel[hotel_id]}</queryFormat></DbDetails>
+			<submit namelist="DbDetails" method="post"/>
+			<DbDetails/><submit next="CB_hotel" namelist="DbDetails" method="post"/>
+			</if></OnClick></Button>
+		<Button Name="search" Visible="true" Enabled="true" Size="60,20" Text="查找" tooltip="当门店列表有选择时搜索该门店的相关用户角色，当列表为空时搜索当前使用者相关权限门店的相关用户角色">
+			<OnClick><assign name="srhuh" expr=""/><if cond="%{CB_hotel[hotel_id]}"><assign name="srhuh" expr="and b.hotel_id='%{CB_hotel[hotel_id]}'"/></if><DbDetails><Where>%{srhuh}</Where></DbDetails><submit next="userlst" namelist="DbDetails" method="post"/></OnClick>
+			</Button>
+		<Button Name="searchRU" Visible="true" Enabled="true" Size="60,20" Text="查找该用户" tooltip="该用户所有用户角色">
+			<OnClick><DbDetails><Where>and b.user_id='%{CB_user[user_id]}'</Where></DbDetails><submit next="userlst" namelist="DbDetails" method="post"/></OnClick>
+			</Button>
+		<BR/>
+		<ListCtrl Name="userlst" Visible="true" Enabled="true" Size="600,300"
+			Heading="用户名,50;酒店名,20;角色,80;状态,80;创建时间,80;创建人,80;更新时间,80;更新人,80"
+			OnClick="SetSel(CB_user,%{user_loginname});SetSel(CB_hotel,%{HotelName});SetSel(CB_role,%{name});SetSel(CB_bizStatus,%{biz_status});">
+			<DbDetails>
+				<DbTable>creator.ctu_biz as b left join creator.ctu_user as u on b.user_id=u.user_id left join creator.ctu_hotels as h on b.hotel_id=h.hotel_id left join creator.ctu_bizrole as r on b.role_id=r.role_id</DbTable>
+				<Data>u.user_loginname, h.HotelName, r.name, b.biz_status, FROM_UNIXTIME(b.create_dt,'%Y-%m-%d') as crdt, b.create_by, FROM_UNIXTIME(b.update_dt,'%Y-%m-%d') as updt,b.update_by, b.biz_id</Data>
+				<Order>order by biz_id</Order>
+				<Where></Where>
+				<queryFormat>select %{data} from %{dbtable} %{purviewcond} %{where} %{hotelonly}</queryFormat> 
+			</DbDetails>
+		</ListCtrl>
+		</Ctrls></GroupBox>
+
+		<BR autoHeight="1"/>
+		<GroupBox Name="GroupBox1" Visible="true" Enabled="true" Size="750,100" Text="角色管理"><Ctrls>
+		<Label Name="lb_name" Visible="true" Enabled="true" Size="40,20" Text="角色名"/>
+		<TextBox Name="TB_name" Visible="true" Enabled="true" ReadOnly="false" Size="80,20" Text=""/>
+		<TAB/>
+		<Label Name="lb_layout" Visible="true" Enabled="true" Size="60,20" Text="角色主页"/>
+		<TextBox Name="TB_layout" Visible="true" Enabled="true" ReadOnly="false" Size="100,20" Text="">
+		<OnEnChange><assign name="uiChged" expr="1"/></OnEnChange></TextBox>
+		<TAB/>
+		<Label Name="lb_purview" Visible="true" Enabled="true" Size="30,20" Text="权限"/>
+		<TextBox Name="TB_purview" Visible="true" Enabled="true" ReadOnly="false" Size="80,20" Text="" Number="1">
+		<OnEnChange><assign name="ueChged" expr="1"/></OnEnChange></TextBox>
+		<TAB/>
+		<Label Name="lb_grouptype" Visible="true" Enabled="true" Size="50,20" Text="部门类别"/>
+		<ComboBox Name="CB_grouptype" Visible="true" Enabled="true" Size="100,100" Type="3" Items=" |总部|门店" SelectedIndex="0"/>
+		<TextBox Name="TB_code" Visible="0" Enabled="true" Size="20,20" ReadOnly="false" Text="" NULLChanged="1"> 
+			<DbDetails>
+				<DbTable>creator.ctu_bizrole</DbTable>
+				<Index>user_id</Index>
+				<Data>role_id</Data>
+				<Order>role_id desc</Order>
+				<queryFormat>select %{data} from %{dbtable} %{where} order by %{order} limit 0,1</queryFormat> 
+			</DbDetails>
+			</TextBox>
+
+		<BR/>
+		<ListCtrl Name="ContactList" Visible="true" Enabled="true" PageSize="50" Size="300,100" OnLoad="init"
+			Heading="序号,40;角色名,40;主页,100;权限,20;组别,40;"
+			OnClick="SetText(TB_code,%{role_id});SetText(TB_name,%{name});SetText(TB_layout,%{biz_layout});SetText(TB_purview,%{purview});SetSel(CB_grouptype,%{grouptype});">
+			<DbDetails>
+				<DbTable>creator.ctu_bizrole</DbTable>
+				<Index>user_id</Index>
+				<Data>role_id,name,biz_layout,purview,grouptype</Data>
+				<Order>role_id</Order>
+				<queryFormat>select %{data} from %{dbtable} %{where} order by %{order} limit %{StartRow},%{PgSize}</queryFormat> 
+			</DbDetails>
+		</ListCtrl>
+		<Button Name="search_m" Visible="true" Enabled="true" Size="30,20" Text="查找">
+			<OnClick>
+			<DbDetails></DbDetails><submit next="ContactList" namelist="DbDetails" method="post"/></OnClick></Button>
+		<Button Name="insert" Visible="true" Enabled="true" Size="30,20" Text="新增">
+			<OnClick>
+			<if cond="!%{TB_name}"><alert next="TB_name" expr="%{lb_name}不能为空"/>
+			<elseif cond="!%{TB_layout}"/><alert next="TB_layout" expr="%{lb_layout}不能为空"/>
+			<elseif cond="!%{TB_purview}"/><alert next="TB_purview" expr="%{lb_purview}不能为空"/>
+			<else/><assign name="newRole" expr="1"/>
+			<DbDetails>
+			<Data>(name,biz_layout,purview,grouptype)</Data>
+			<queryFormat>insert into creator.ctu_bizrole %{data} values('%{TB_name}','%{TB_layout}','%{TB_purview}','%{CB_grouptype}')</queryFormat></DbDetails>
+			<submit namelist="DbDetails" method="post"/>
+			<DbDetails/><submit next="TB_code" namelist="DbDetails" method="post"/>
+			<submit next="ContactList" namelist="DbDetails" method="post"/>
+			<submit next="CB_role" namelist="DbDetails" method="post"/>
+			</if><assign name="uiChged" expr="0"/><assign name="ueChged" expr="0"/></OnClick></Button>
+		<TAB/>
+		<Button Name="update" Visible="true" Enabled="true" Size="30,20" Text="修改">
+			<OnClick>
+			<assign name="uChged" expr="%{uiChged}+%{ueChged}"/>
+			<if cond="!%{TB_name}"><alert next="TB_name" expr="%{lb_name}不能为空"/>
+			<elseif cond="!%{TB_layout}"/><alert next="TB_layout" expr="%{lb_layout}不能为空"/>
+			<elseif cond="!%{TB_purview}"/><alert next="TB_purview" expr="%{lb_purview}不能为空"/>
+			<else/><DbDetails><queryFormat>update creator.ctu_bizrole set name='%{TB_name}',biz_layout='%{TB_layout}',purview='%{TB_purview}',grouptype='%{CB_grouptype}' where role_id=%{TB_code};</queryFormat></DbDetails>
+			<submit next="update" namelist="DbDetails" method="post"/>
+			<DbDetails/><submit next="ContactList" namelist="DbDetails" method="post"/><submit next="CB_role" namelist="DbDetails" method="post"/>
+			</if></OnClick></Button>
+		</Ctrls></GroupBox>
+		
+	</Ctrls>      
+	<OnChanged><if cond="%{users.TB_code[IsDataChanged]}>0"><if cond="%{users.TB_code[SnapShot]}"><notify next="tst" expr="code %{users.TB_code[SnapShot]}"/></if></if>
+		<!--if cond="%{resv.resvNew}"><if cond="!%{session.resvNewId}">
+		<notify next="tst" expr="您有新预定 %{resv.resvNew[custName]}"/>
+		<assign name="session.resvNewId" expr="%{resv.resvNew}"/>
+		<elseif cond="%{resv.resvNew}!=%{session.resvNewId}"/>
+		<notify next="tst" expr="您有新预定 %{resv.resvNew[custName]}"/>
+		<assign name="session.resvNewId" expr="%{resv.resvNew}"/></if>
+		</if--></OnChanged>
+	<OnActivate>
+		<if cond="%{purview}"><assign name="purviewcond" expr="where purview &lt;= %{purview}"/></if>
+		<if cond="%{purview}!=127"><SetVisible name="GroupBox1" Visible="0"/><SetVisible name="SetHotelManager" Visible="0"/><SetVisible name="searchHotel" Visible="0"/><assign name="hotelonlys" expr="where manager_id = %{user_id}"/></if>
+		<if cond="%{hotel_id}"><assign name="hotelonly" expr="and b.hotel_id = %{hotel_id}"/></if>
+		<if cond="%{hotelid}!=%{hostels.TB_code}">
+			<assign name="hotelid" expr="%{hostels.TB_code}"/>
+			<DbDetails/><submit namelist="DbDetails" next="CB_roomTpye"/></if>
+		<if cond="%{rmtpChg}!=%{roomtype.ChangeId}">
+			<assign name="rmtpChg" expr="%{roomtype.ChangeId}"/>
+			<DbDetails/><submit namelist="DbDetails" next="CB_roomTpye"/></if>
+		<submit next="search" method="post" function="click"/>
+		<DbDetails/><submit namelist="DbDetails" next="CB_role"/>
+		<submit next="userlst" namelist="DbDetails" method="post"/>
+		<submit next="CB_hotel" namelist="DbDetails" method="post"/>
+		</OnActivate>
+	</WndTap>

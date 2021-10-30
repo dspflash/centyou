@@ -1,0 +1,66 @@
+﻿<WndTap Name="sms" Text="短消息">
+	<Ctrls>
+	    <DateTime Name="YearMon" Visible="true" Enabled="true" Format="yyyy-MM-dd" Location="20,0" Size="100,20"/>
+		<ComboBox Name="UserCbLst" Visible="true" Enabled="true" Size="80,20" SelectedIndex="-1"></ComboBox>
+		<Button Name="searchU" Visible="true" Enabled="true"  Text="查询" Size="50,20">
+			<OnClick><DbDetails><Where>where year(DateTime)='%{YearMon[year]}' and month(DateTime)='%{YearMon[month]}' and day(DateTime)='%{YearMon[day]}' and (ReUserNo='%{SeatsNo}' or SeUserNo='%{SeatsNo}' or ReUserNo='000') and (ReUserNo='%{UserCbLst}' or SeUserNo='%{UserCbLst}')</Where></DbDetails><submit next="sms_send" namelist="DbDetails" method="post"/></OnClick></Button>
+		<Button Name="searchUall" Visible="true" Enabled="true"  Text="查询所有" Size="50,20">
+			<OnClick><DbDetails><Where>where year(DateTime)='%{YearMon[year]}' and month(DateTime)='%{YearMon[month]}' and day(DateTime)='%{YearMon[day]}' and (ReUserNo='%{UserCbLst}' or SeUserNo='%{UserCbLst}')</Where></DbDetails><submit next="sms_send" namelist="DbDetails" method="post"/></OnClick></Button>
+		<Button Name="searchR" Visible="true" Enabled="true"  Text="接收的消息" Size="60,20">
+			<OnClick><DbDetails><Where>where year(DateTime)='%{YearMon[year]}' and month(DateTime)='%{YearMon[month]}' and day(DateTime)='%{YearMon[day]}' and (ReUserNo='%{SeatsNo}' or ReUserNo='000')</Where></DbDetails><submit next="sms_send" namelist="DbDetails" method="post"/></OnClick></Button>
+		<Button Name="searchT" Visible="true" Enabled="true"  Text="发送的消息" Size="60,20">
+			<OnClick><DbDetails><Where>where year(DateTime)='%{YearMon[year]}' and month(DateTime)='%{YearMon[month]}' and day(DateTime)='%{YearMon[day]}' and SeUserNo='%{SeatsNo}'</Where></DbDetails><submit next="sms_send" namelist="DbDetails" method="post"/></OnClick>
+			</Button>
+		<Button Name="PrePage" Visible="true" Enabled="true" Size="50,20" Text="上一页" OnClick="(sms_send)GetPage(Pre)"></Button>
+		<Button Name="NextPage" Visible="true" Enabled="true" Size="50,20" Text="下一页" OnClick="(sms_send)GetPage(Next)"></Button>
+		<BR Size="30,0"/>
+		<ListCtrl Name="sms_send" Visible="true" Enabled="true" PageSize="15" loadedclick="false" Size="700,250"
+			OnLoad="init" Heading="主题,200;接收人,60;发送人,60;发送时间,100;阅读时间,100">
+			<OnClick><alert next="tst" expr="onclick"/></OnClick>
+		<DbDetails>
+			<DbTable>ctu_private_msg</DbTable>
+			<Index>id</Index>
+			<Data>pm_subject,pm_to,pm_from,FROM_UNIXTIME(pm_sent,'%Y-%m-%d %H:%i') as DTsent,case when pm_read!=0 then FROM_UNIXTIME(pm_read,'%Y-%m-%d %H:%i') else 0 end as DTread,pm_id</Data>
+			<Order>pm_id desc</Order>
+			<Where>where pm_sent between UNIX_TIMESTAMP('%{YearMon}') and UNIX_TIMESTAMP('%{YearMon}')+86400</Where>
+			<queryFormat>select %{data} from %{dbtable} %{where} order by %{order} limit %{StartRow},%{PgSize} </queryFormat> 
+		</DbDetails>
+		</ListCtrl>
+		<BR Size="30,0" autoheight="1"/>
+		<Label Name="lb_seats" Visible="true" Enabled="true" Text="接收人" Size="50,20"/>
+		<TextBox Name="TB_seats" Visible="true" Enabled="true" ReadOnly="false" Size="50,20" Text=""/>
+        <ComboBox Name="CB_showUserLst" Visible="true" Enabled="true" Items="显示在线|显示离线|显示所有" Size="80,20" SelectedIndex="0">
+		<OnSelChange>
+		<if cond="%{CB_showUserLst[SelectedIndex]}==0"><DbDetails><Where>u.status&lt;'u'</Where></DbDetails><submit next="UserLst" namelist="DbDetails" method="post"/>
+		<elseif cond="%{CB_showUserLst[SelectedIndex]}==1"/><DbDetails><Where>u.status='u'</Where></DbDetails><submit next="UserLst" namelist="DbDetails" method="post"/>
+		<else/><DbDetails><Where>u.status!=''</Where></DbDetails><submit next="UserLst" namelist="DbDetails" method="post"/>
+		</if></OnSelChange></ComboBox>
+		<Button Name="SendMsg" Visible="true" Enabled="true" Size="50,20"
+		Text="发送消息" OnClick="sql:insert into tMessageBox (ReUserName,ReUserNo,content,SeUserName,SeUserNo,DateTime,IsRead) values('%{TB_seats}','%{TB_seats[SeatsNo]}','%{TB_MSG}','%{SeatsName}','%{SeatsNo}',GETDATE(),1);SetText(TB_MSG,)"></Button>
+		<Button Name="SendMsgGrp" Visible="true" Enabled="true" Size="50,20"
+		Text="群发消息" OnClick="sql:insert into tMessageBox (ReUserName,ReUserNo,content,SeUserName,SeUserNo,DateTime,IsRead) values('所有人','000','%{TB_MSG}','%{SeatsName}','%{SeatsNo}',GETDATE(),1);SetText(TB_MSG,)"></Button>
+		<BR Size="30,0" autoheight="1"/>
+		<TextBox Name="TB_MSG" Visible="true" Enabled="true" ReadOnly="false" EscapeString="&lt;BR&gt;" EscapeStringTab="&lt;TB&gt;"
+		Size="300,200" Text="">
+		<OnEnterKey><DbDetails><queryFormat>insert into tMessageBox (ReUserName,ReUserNo,content,SeUserName,SeUserNo,DateTime,IsRead) values('%{TB_seats}','%{TB_seats[SeatsNo]}','%{TB_MSG}','%{SeatsName}','%{SeatsNo}',GETDATE(),1)</queryFormat></DbDetails><submit next="SendMsg" namelist="DbDetails" method="post"/><assign name="TB_MSG" expr=""/></OnEnterKey>
+		</TextBox>
+		<!--hided ctrls-->
+		<Button Name="search" Visible="false" Enabled="true"  Text="消息" Size="50,20">
+			<OnClick><if cond="userid>'7000'"><DbDetails><Where>where ReUserNo='%{SeatsNo}'</Where></DbDetails><submit next="sms.sms" namelist="DbDetails" method="post"/></if></OnClick></Button>
+		<Button Name="searchUserLst" Visible="false" Enabled="true"  Text="在线用户" Size="50,20">
+			<OnClick><if cond="userid>'7000'"><DbDetails></DbDetails><submit next="sms.UserLst" namelist="DbDetails" method="post"/></if></OnClick></Button>
+		<ListCtrl Name="sms" Visible="false" Enabled="true" PageSize="5" loadedclick="false" Size="50,20" resetContent="false" NULLChanged="1"
+		OnLoad="init"
+		>
+		<DbDetails>
+			<DbTable>ctu_private_msg</DbTable>
+			<Index>id</Index>
+			<Data>pm_id</Data>
+			<Order>pm_id desc</Order>
+			<Where>where pm_to='%{userid}' and pm_read=0</Where>
+			<queryFormat>select %{data} from %{dbtable} %{where} order by %{order}</queryFormat> 
+		</DbDetails>
+		</ListCtrl>
+	</Ctrls>
+	<OnChanged><if cond="%{sms.sms[IsDataChanged]}>0"><if cond="%{sms.sms[SnapShot]}"><notify next="tst" expr="您有新消息 sms.sms[SnapShot]"/></if></if></OnChanged>
+</WndTap>

@@ -1,0 +1,190 @@
+﻿<GroupBox Name="GBDEDITctu_hotels"><Ctrls>
+<GroupBox feature="tab" Text="BasicInfo" Name="BasicInfo"><Ctrls>
+<GroupBox cols="xs12 sm6 md4" Multiline="0" Name="GB_hotelname"><Ctrls>
+<Label Align="Right" Text="hotelname" Name="lb_hotelname" Size="60,20"/>
+<TextBox Weight="150" Text="" ToolTip="ttp_hotelname" Name="hotelname" Size="150,20"/>
+<MagicCtrl ToolTip="DialToCall" Name="dialhotelname" OnClick="nis3ucs:%{hotelname}" images=" ,data/startcall_green.png" button="type:0" Size="20,20"/>
+</Ctrls></GroupBox>
+<GroupBox cols="xs12 sm6 md4" Multiline="0" Name="GB_mobile"><Ctrls>
+<Label Align="Right" Text="mobile" Name="lb_mobile" Size="60,20"/>
+<TextBox Weight="150" Text="" ToolTip="ttp_mobile" Name="mobile" Size="150,20"/>
+<MagicCtrl ToolTip="DialToCall" Name="dialmobile" OnClick="nis3ucs:%{mobile}" images=" ,data/startcall_green.png" button="type:0" Size="20,20"/>
+</Ctrls></GroupBox>
+<GroupBox cols="xs12 sm6 md4" Multiline="0" Name="GB_phone"><Ctrls>
+<Label Align="Right" Text="phone" Name="lb_phone" Size="60,20"/>
+<TextBox Weight="150" Text="" ToolTip="ttp_phone" Name="phone" Size="150,20"/>
+<MagicCtrl ToolTip="DialToCall" Name="dialphone" OnClick="nis3ucs:%{phone}" images=" ,data/startcall_green.png" button="type:0" Size="20,20"/>
+</Ctrls></GroupBox>
+<BR AutoHeight="1"/><GroupBox cols="xs12 sm6 md4" Multiline="0" Name="GB_cityname"><Ctrls>
+<Label Align="Right" Text="cityname" Name="lb_cityname" readonly="true" Size="60,20"/>
+<TextBox Weight="150" Text="" ToolTip="ttp_cityname" Name="cityname" readonly="true" Size="150,20">
+	<DbDetails>
+<Index>city_code</Index>
+<DbTable>creator.ctu_city</DbTable>
+<Data>city_name,city_code</Data>
+<Where/>
+<queryFormat/></DbDetails><OnEnChange><if cond="%{cityname[city_code]}"><assign name="cityid" expr="%{cityname[city_code]}"/></if></OnEnChange></TextBox>
+<MagicCtrl Name="pickcityname" Link="tip:Pick" images=",data/search.png" button="type:0" Size="20,20"><OnClick><assign name="$parent.citypick.frmwndctrl" expr="ctu_hotels.cityname"/></OnClick></MagicCtrl>\r\n</Ctrls></GroupBox>
+<GroupBox cols="xs12 sm6 md4" Multiline="0" overlap="pre" Name="GB_cityid" Visible="false"><Ctrls>
+<Label Align="Right" Text="cityid" overlap="pre" Name="lb_cityid" readonly="true" Size="60,20" Visible="false"/>
+<TextBox Weight="170" Text="" ToolTip="ttp_cityid" overlap="pre" Name="cityid" readonly="true" Size="170,20" Visible="false"/>
+</Ctrls></GroupBox>
+<GroupBox cols="xs12 sm6 md4" Multiline="0" Name="GB_address"><Ctrls>
+<Label Align="Right" Text="address" Name="lb_address" Size="60,20"/>
+<TextBox Weight="170" Text="" ToolTip="ttp_address" Name="address" Size="170,20"/>
+</Ctrls></GroupBox>
+<GroupBox cols="xs12 sm6 md4" Multiline="0" Name="GB_email"><Ctrls>
+<Label Align="Right" Text="email" Name="lb_email" Size="60,20"/>
+<TextBox Weight="170" Text="" ToolTip="ttp_email" Name="email" Size="170,20"/>
+</Ctrls></GroupBox>
+<GroupBox cols="xs12 sm6 md4" Multiline="0" overlap="pre" Name="GB_opendate" Visible="false"><Ctrls>
+<Label Align="Right" Text="opendate" overlap="pre" Name="lb_opendate" readonly="true" Size="60,20" Visible="false"/>
+<DateTime Weight="170" Text="" ToolTip="ttp_opendate" overlap="pre" Name="opendate" readonly="true" Size="170,20" Visible="false" Format="yyyy-MM-dd HH:mm:ss"/>
+</Ctrls></GroupBox>
+<BR AutoHeight="1"/><GroupBox cols="xs12 sm6 md4" Multiline="0" Name="GB_url"><Ctrls>
+<Label Align="Right" Text="url" Name="lb_url" Size="60,20"/>
+<TextBox Weight="170" Text="" ToolTip="ttp_url" Name="url" Size="170,20"/>
+</Ctrls></GroupBox>
+<GroupBox cols="xs12 sm6 md4" Multiline="0" Name="GB_qq"><Ctrls>
+<Label Align="Right" Text="qq" Name="lb_qq" Size="60,20"/>
+<TextBox Weight="170" Text="" ToolTip="ttp_qq" Name="qq" Size="170,20"/>
+</Ctrls></GroupBox>
+<GroupBox cols="xs12 sm6 md4" Multiline="0" Name="GB_star"><Ctrls>
+<Label Align="Right" Text="star" Name="lb_star" Size="60,20"/>
+<TextBox Weight="170" Text="" ToolTip="ttp_star" Name="star" Size="170,20"/>
+</Ctrls></GroupBox>
+<BR AutoHeight="1"/><GroupBox cols="xs12 sm6 md4" Multiline="0" Name="GB_manager_id"><Ctrls>
+<Label Align="Right" Text="manager_id" onload="init" Name="lb_manager_id" Size="60,20"/>
+<ComboBox Weight="170" Text="" ToolTip="ttp_manager_id" onload="init" Name="manager_id" Size="170,100">
+	<DbDetails>
+<Index>user_id</Index>
+<DbTable>creator.ctu_user</DbTable>
+<Data>user_name,user_id</Data>
+<Where>1</Where>
+<queryFormat>select %{data} from %{dbtable} where %{where} limit %{StartRow},35</queryFormat></DbDetails></ComboBox>
+</Ctrls></GroupBox>
+<GroupBox cols="xs12 sm6 md4" Multiline="0" overlap="pre" Name="GB_manager" Visible="false"><Ctrls>
+<Label Align="Right" Text="manager" overlap="pre" Name="lb_manager" readonly="true" Size="60,20" Visible="false"/>
+<TextBox Weight="170" Text="" ToolTip="ttp_manager" overlap="pre" Name="manager" readonly="true" Size="170,20" Visible="false"/>
+</Ctrls></GroupBox>
+<GroupBox cols="xs12 sm6 md4" Multiline="0" overlap="pre" Name="GB_chain_name" Visible="false"><Ctrls>
+<Label Align="Right" Text="chain_name" overlap="pre" Name="lb_chain_name" readonly="true" Size="60,20" Visible="false"/>
+<TextBox Weight="170" Text="" ToolTip="ttp_chain_name" overlap="pre" Name="chain_name" readonly="true" Size="170,20" Visible="false"/>
+</Ctrls></GroupBox>
+<GroupBox cols="xs12 sm6 md4" Multiline="0" Name="GB_chain_id"><Ctrls>
+<Label Align="Right" Text="chain_id" onload="init" Name="lb_chain_id" Size="60,20"/>
+<ComboBox Weight="170" Text="" ToolTip="ttp_chain_id" onload="init" Name="chain_id" Size="170,100">
+	<DbDetails fcsm="true">
+<Index>chain_id</Index>
+<DbTable>creator.ctu_chainbrand</DbTable>
+<Data>chain_name_cn chain_name,chain_id</Data>
+<Where/>
+<queryFormat/></DbDetails></ComboBox>
+</Ctrls></GroupBox>
+<GroupBox cols="xs12 sm6 md4" Multiline="0" Name="GB_picture"><Ctrls>
+<Label Align="Right" Text="picture" Name="lb_picture" Size="60,20"/>
+<TextBox Weight="170" Text="" ToolTip="ttp_picture" Name="picture" Size="170,20"/>
+</Ctrls></GroupBox>
+<BR AutoHeight="1"/><GroupBox cols="xs12 sm6 md4" Multiline="0" Name="GB_album"><Ctrls>
+<Label Align="Right" Text="album" Name="lb_album" Size="60,20"/>
+<TextBox Weight="170" Text="" ToolTip="ttp_album" Name="album" Size="170,20"/>
+</Ctrls></GroupBox>
+<GroupBox cols="xs12 sm6 md4" Multiline="0" Name="GB_mappoint"><Ctrls>
+<Label Align="Right" Text="mappoint" Name="lb_mappoint" Size="60,20"/>
+<TextBox Weight="170" Text="" ToolTip="ttp_mappoint" Name="mappoint" Size="170,20"/>
+</Ctrls></GroupBox>
+<GroupBox cols="xs12 sm6 md4" Multiline="0" overlap="pre" Name="GB_min_price" Visible="false"><Ctrls>
+<Label Align="Right" Text="min_price" overlap="pre" Name="lb_min_price" readonly="true" Size="60,20" Visible="false"/>
+<TextBox Weight="170" Text="" ToolTip="ttp_min_price" overlap="pre" Name="min_price" readonly="true" Size="170,20" Visible="false"/>
+</Ctrls></GroupBox>
+<GroupBox cols="xs12 sm6 md4" Multiline="0" overlap="pre" Name="GB_max_price" Visible="false"><Ctrls>
+<Label Align="Right" Text="max_price" overlap="pre" Name="lb_max_price" readonly="true" Size="60,20" Visible="false"/>
+<TextBox Weight="170" Text="" ToolTip="ttp_max_price" overlap="pre" Name="max_price" readonly="true" Size="170,20" Visible="false"/>
+</Ctrls></GroupBox>
+<GroupBox cols="xs12 sm6 md4" Multiline="0" overlap="pre" Name="GB_uptime" Visible="false"><Ctrls>
+<Label Align="Right" Text="uptime" overlap="pre" Name="lb_uptime" readonly="true" Size="60,20" Visible="false"/>
+<TextBox Weight="170" Text="" ToolTip="ttp_uptime" overlap="pre" Name="uptime" readonly="true" Size="170,20" Visible="false"/>
+</Ctrls></GroupBox>
+<GroupBox cols="xs12 sm6 md4" Multiline="0" Name="GB_tags"><Ctrls>
+<Label Align="Right" Text="tags" Name="lb_tags" Size="60,20"/>
+<TextBox Weight="170" Text="" ToolTip="ttp_tags" Name="tags" Size="170,20"/>
+</Ctrls></GroupBox>
+<BR AutoHeight="1"/><GroupBox cols="xs12 sm6 md4" Multiline="0" Name="GB_actived"><Ctrls>
+<CheckBox Text="actived" ToolTip="ttp_actived" Name="actived" Size="230,20" checked="true"/>
+</Ctrls></GroupBox>
+</Ctrls></GroupBox>
+<BR NULLHeight="1"/><GroupBox feature="tab" Text="Info2" Name="Info2"><Ctrls>
+<GroupBox cols="xs12" Multiline="0" Name="GB_traffic"><Ctrls>
+<Label Align="Right" Text="traffic" Name="lb_traffic" Size="60,50"/>
+<TextBox Weight="630" Text="" ToolTip="ttp_traffic" Name="traffic" Size="630,50"/>
+</Ctrls></GroupBox>
+<BR AutoHeight="1"/><GroupBox cols="xs12" Multiline="0" Name="GB_pubphones"><Ctrls>
+<Label Align="Right" Text="pubphones" Name="lb_pubphones" Size="60,50"/>
+<TextBox Weight="630" Text="" ToolTip="ttp_pubphones" Name="pubphones" Size="630,50"/>
+</Ctrls></GroupBox>
+<BR AutoHeight="1"/><GroupBox cols="xs12" Multiline="0" Name="GB_contactinfo"><Ctrls>
+<Label Align="Right" Text="contactinfo" Name="lb_contactinfo" Size="60,50"/>
+<TextBox Weight="630" Text="" ToolTip="ttp_contactinfo" Name="contactinfo" Size="630,50"/>
+</Ctrls></GroupBox>
+<BR AutoHeight="1"/><GroupBox cols="xs12" Multiline="0" Name="GB_content"><Ctrls>
+<Label Align="Right" Text="content" Name="lb_content" Size="60,50"/>
+<TextBox Weight="630" Text="" ToolTip="ttp_content" Name="content" Size="630,50"/>
+</Ctrls></GroupBox>
+<BR AutoHeight="1"/><GroupBox cols="xs12" Multiline="0" Name="GB_delicacy"><Ctrls>
+<Label Align="Right" Text="delicacy" Name="lb_delicacy" Size="60,50"/>
+<TextBox Weight="630" Text="" ToolTip="ttp_delicacy" Name="delicacy" Size="630,50"/>
+</Ctrls></GroupBox>
+<BR AutoHeight="1"/><GroupBox cols="xs12" Multiline="0" Name="GB_service"><Ctrls>
+<Label Align="Right" Text="service" Name="lb_service" Size="60,50"/>
+<TextBox Weight="630" Text="" ToolTip="ttp_service" Name="service" Size="630,50"/>
+</Ctrls></GroupBox>
+</Ctrls></GroupBox>
+<BR NULLHeight="1"/><GroupBox feature="tab" Text="Info3" Name="Info3"><Ctrls>
+<GroupBox cols="xs12" Multiline="0" Name="GB_boss"><Ctrls>
+<Label Align="Right" Text="boss" Name="lb_boss" Size="60,50"/>
+<TextBox Weight="630" Text="" ToolTip="ttp_boss" Name="boss" Size="630,50"/>
+</Ctrls></GroupBox>
+<BR AutoHeight="1"/><GroupBox cols="xs12" Multiline="0" Name="GB_canyin"><Ctrls>
+<Label Align="Right" Text="canyin" Name="lb_canyin" Size="60,50"/>
+<TextBox Weight="630" Text="" ToolTip="ttp_canyin" Name="canyin" Size="630,50"/>
+</Ctrls></GroupBox>
+<BR AutoHeight="1"/><GroupBox cols="xs12" Multiline="0" Name="GB_roomdetails"><Ctrls>
+<Label Align="Right" Text="roomdetails" Name="lb_roomdetails" Size="60,50"/>
+<TextBox Weight="630" Text="" ToolTip="ttp_roomdetails" Name="roomdetails" Size="630,50"/>
+</Ctrls></GroupBox>
+<BR AutoHeight="1"/><GroupBox cols="xs12" Multiline="0" Name="GB_decoration"><Ctrls>
+<Label Align="Right" Text="decoration" Name="lb_decoration" Size="60,50"/>
+<TextBox Weight="630" Text="" ToolTip="ttp_decoration" Name="decoration" Size="630,50"/>
+</Ctrls></GroupBox>
+<BR AutoHeight="1"/><GroupBox cols="xs12" Multiline="0" Name="GB_nearbyhotels"><Ctrls>
+<Label Align="Right" Text="nearbyhotels" Name="lb_nearbyhotels" Size="60,50"/>
+<TextBox Weight="630" Text="" ToolTip="ttp_nearbyhotels" Name="nearbyhotels" Size="630,50"/>
+</Ctrls></GroupBox>
+<BR AutoHeight="1"/><GroupBox cols="xs12" Multiline="0" Name="GB_nearbypoints"><Ctrls>
+<Label Align="Right" Text="nearbypoints" Name="lb_nearbypoints" Size="60,50"/>
+<TextBox Weight="630" Text="" ToolTip="ttp_nearbypoints" Name="nearbypoints" Size="630,50"/>
+</Ctrls></GroupBox>
+</Ctrls></GroupBox>
+<BR NULLHeight="1"/><GroupBox feature="tab" Text="Info4" Name="Info4"><Ctrls>
+<GroupBox cols="xs12" Multiline="0" Name="GB_scenic"><Ctrls>
+<Label Align="Right" Text="scenic" Name="lb_scenic" Size="60,50"/>
+<TextBox Weight="630" Text="" ToolTip="ttp_scenic" Name="scenic" Size="630,50"/>
+</Ctrls></GroupBox>
+<BR AutoHeight="1"/><GroupBox cols="xs12" Multiline="0" Name="GB_bedprice"><Ctrls>
+<Label Align="Right" Text="bedprice" Name="lb_bedprice" Size="60,50"/>
+<TextBox Weight="630" Text="" ToolTip="ttp_bedprice" Name="bedprice" Size="630,50"/>
+</Ctrls></GroupBox>
+<BR AutoHeight="1"/><GroupBox cols="xs12" Multiline="0" Name="GB_specialty"><Ctrls>
+<Label Align="Right" Text="specialty" Name="lb_specialty" Size="60,50"/>
+<TextBox Weight="630" Text="" ToolTip="ttp_specialty" Name="specialty" Size="630,50"/>
+</Ctrls></GroupBox>
+<BR AutoHeight="1"/><GroupBox cols="xs12" Multiline="0" Name="GB_remark"><Ctrls>
+<Label Align="Right" Text="remark" Name="lb_remark" Size="60,50"/>
+<TextBox Weight="630" Text="" ToolTip="ttp_remark" Name="remark" Size="630,50"/>
+</Ctrls></GroupBox>
+<GroupBox cols="xs12 sm6 md4" Multiline="0" overlap="pre" Name="GB_hotel_id" Visible="false"><Ctrls>
+<Label Align="Right" Text="hotel_id" overlap="pre" Name="lb_hotel_id" readonly="true" Size="60,20" Visible="false"/>
+<TextBox Weight="150" Text="" ToolTip="ttp_hotel_id" overlap="pre" Name="hotel_id" readonly="true" Size="150,20" Visible="false"><OnEnChange><if cond="'%{hotel_id}'"><SetVisible name="insertctu_hotels" Visible="0"/><SetVisible name="modifyctu_hotels" Visible="1"/><else/><SetVisible name="insertctu_hotels" Visible="1"/><SetVisible name="modifyctu_hotels" Visible="0"/></if></OnEnChange></TextBox>
+<MagicCtrl ToolTip="DialToCall" Name="dialhotel_id" OnClick="nis3ucs:%{hotel_id}" images=" ,data/startcall_green.png" button="type:0" Size="20,20"/>
+</Ctrls></GroupBox>
+</Ctrls></GroupBox></Ctrls></GroupBox>

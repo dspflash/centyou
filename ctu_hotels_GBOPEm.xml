@@ -1,0 +1,37 @@
+<GroupBox cols="xs12 sm12 md12 lg12" Name="GBOPEctu_hotels" Size="100,100"><Ctrls>
+<Button sqlpkinsert="hotel_id" Text="create" ToolTip="ttp_createctu_hotels" Name="insertctu_hotels" Size="50,20">
+	<OnClick>
+	<DbDetails fcsm="1">
+<DbTable>creator.ctu_hotels</DbTable>
+<Required>%{dataRequired}</Required>
+<Requireless>%{dataRequireless}</Requireless>
+<Data>hotelname,email,opendate,address,url,phone,mobile,qq,star,cityid[city_code],manager,chain_name,chain_id[chain_id],picture,album,mappoint,traffic,pubphones,contactinfo,content,delicacy,service,boss,canyin,roomdetails,decoration,nearbyhotels,nearbypoints,scenic,bedprice,specialty,remark,tags,actived</Data>
+<DataEx>cityname,manager_id,uptime;'%{cityid[city_name]}','%{manager_id[user_name]}',UNIX_TIMESTAMP()</DataEx>
+<queryFormat>insert into %{table} %{data}</queryFormat></DbDetails>
+	<submit namelist="DbDetails"/><if cond="%{refreshAfterEdit}"><submit next="ctu_hotelsLst"/></if>
+	</OnClick>
+	</Button><TAB/>
+<Button Text="modify" ToolTip="ttp_modifyctu_hotels" Name="modifyctu_hotels" Size="50,20">
+			  <OnClick>
+	<DbDetails fcsm="1">
+<DbTable>creator.ctu_hotels</DbTable>
+<Required>%{dataRequired}</Required>
+<Requireless>%{dataRequireless}</Requireless>
+<Data>hotelname,email,opendate,address,url,phone,mobile,qq,star,manager,chain_name,chain_id[chain_id],picture,album,mappoint,traffic,pubphones,contactinfo,content,delicacy,service,boss,canyin,roomdetails,decoration,nearbyhotels,nearbypoints,scenic,bedprice,specialty,remark,tags,actived</Data>
+<DataEx>manager_id,uptime;'%{manager_id[user_name]}',UNIX_TIMESTAMP()</DataEx>
+<Where>hotel_id='%{hotel_id}'</Where>
+<queryFormat>update %{table} set cityid=if('%{cityid[city_code]}','%{cityid[city_code]}',cityid),cityname=if('%{cityid[city_code]}','%{cityid[city_name]}',cityname),%{data} where %{where}</queryFormat></DbDetails>
+	<submit namelist="DbDetails"/><if cond="%{refreshAfterEdit}"><submit next="ctu_hotelsLst"/></if>
+	</OnClick>
+	</Button><TAB/>
+<Button Text="reset" ToolTip="ttp_resetctu_hotels" Name="resetctu_hotels" Size="50,20">
+	<OnClick>
+	<submit next="GBDEDITctu_hotels" function="reset"/>
+	</OnClick>
+	</Button><TAB/>
+<Button Text="gsearch" ToolTip="ttp_gsearchctu_hotels" Name="gsearchctu_hotels" Size="50,20" visible="false">
+			  <OnClick>
+	<search next="ctu_hotelsLst" listed="0" prefixwhere="0" inputed="1"><zone_id op="(" ref=""/></search><submit next="GBDEDITctu_hotels" namelist="search" function="search"/>
+	</OnClick>
+	</Button><TAB/>
+</Ctrls></GroupBox>

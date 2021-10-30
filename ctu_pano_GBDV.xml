@@ -1,0 +1,17 @@
+﻿<GroupBox cols="xs12 sm12 md12 lg12" Name="GBDVctu_pano"><Ctrls>
+<ListCtrl Heading="path,120;img,120;pano,120;info,640;lats,20;latn,20;reftbl,120;refkey,120;refid,55;pano_id,55;shortid,50;visited,55;lastvisitdt,150;" loadedclick="0" ToolTip="ttp_ctu_pano" Name="ctu_panoLst" Size="700,450">
+	<DbDetails fcsm="1">
+<Index>pano_id</Index>
+<DbTable>creator.ctu_pano</DbTable>
+<Data>path,img,pano,info,lats,latn,reftbl,refkey,refid,pano_id,shortid,visited,lastvisitdt</Data>
+<Order>pano_id</Order></DbDetails>%{}
+<operator firstpage="0" nextpage="0" refresh="1" initial="0" prepage="0">
+<op text="modify"><DbDetails><Where>pano_id='%{ctu_pano_vLst[pano_id]}'</Where></DbDetails><submit next="$this.ctu_pano.ctu_panoLst" namelist="DbDetails"/><assign name="$this.ctu_pano.frmwndctrl" expr="%{this}"/></op>
+<op text="delete" needconfirm="1"><DbDetails>
+<DbTable>creator.ctu_pano</DbTable>
+<Where>pano_id='%{ctu_pano_vLst[pano_id]}'</Where>
+<queryFormat>delete from %{table} where %{where}</queryFormat></DbDetails>
+<submit namelist="DbDetails"/><submit/></op>
+</operator>
+</ListCtrl>
+</Ctrls></GroupBox>

@@ -1,0 +1,17 @@
+﻿<GroupBox cols="xs12 sm6 md4" Name="GBOPVctu_pano" Size="100,100"><Ctrls>
+<Button Text="delete" ToolTip="ttp_deletectu_pano" Name="deletectu_pano" Size="50,20">
+	<OnClick>
+	<DbDetails fcsm="1">
+<DbTable>creator.ctu_pano</DbTable>
+<Where>pano_id='%{ctu_panoLst[pano_id]}'</Where>
+<queryFormat>delete from %{table} where %{where}</queryFormat></DbDetails>
+	<submit namelist="DbDetails"/><submit next="searchctu_pano" function="click"/>
+	</OnClick>
+	</Button><TAB/>
+<Button Text="refresh" ToolTip="ttp_refreshctu_pano" Name="searchctu_pano" Size="50,20">
+			  <OnClick><submit next="ctu_panoLst"/>	</OnClick>
+</Button>
+<TAB/><TAB/><Button Text="firstpage" Name="FPctu_panoLst" OnClick="(ctu_panoLst)GetPage(First)" Size="50,20"/>
+<TAB/><Button Text="prepage" Name="PREctu_panoLst" OnClick="(ctu_panoLst)GetPage(Pre)" Size="50,20"/>
+<TAB/><Button Text="nextpage" Name="NPctu_panoLst" OnClick="(ctu_panoLst)GetPage(Next)" Size="50,20"/>
+</Ctrls></GroupBox>

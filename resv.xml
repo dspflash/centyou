@@ -1,0 +1,162 @@
+﻿<WndTap Name="resv" Text="预订信息">
+	<var name="hotelid" expr="0"/>
+	<var name="rmtpChg" expr="0"/>
+	<Ctrls>
+		<GroupBox Name="GroupBox1" Visible="true" Enabled="true" Text="预订信息" Size="750,600"><Ctrls>
+		<Label Name="lb_custName" Visible="true" Enabled="true" Size="50,20" Text="客人姓名"/>
+		<TextBox Name="TB_custName" Visible="true" Enabled="true" ReadOnly="false" Size="60,20" Text=""/>
+		<TAB/>
+		<Label Name="lb_name" Visible="true" Enabled="true" Size="50,20" Text="房间类型"/>
+		<ComboBox Name="CB_roomTpye" Visible="true" Enabled="true" Size="100,100" Type="3" SelectedIndex="-1">
+			<DbDetails>
+			<queryFormat>select roomtype,roomtypeid from creator.ctu_roomtype where hotel_id=%{hotelid}</queryFormat> 
+			</DbDetails>
+			<OnSELENDOK><if cond="%{CB_resvStatus[id]}==1"><if cond="%{CB_roomTpye}">
+				<DbDetails/><submit next="CB_roomAvlb" namelist="DbDetails" method="post"/></if>
+				<else/><submit next="CB_roomAvlb" method="post" function="resetcontent"/></if>
+				</OnSELENDOK>
+				</ComboBox>
+		<TAB/>
+		<Label Name="lb_resvStatus" Visible="true" Enabled="true" Size="50,20" Text="预定状态"/>
+		<ComboBox Name="CB_resvStatus" Visible="true" Enabled="true" Size="100,100" Type="3" OnLoad="init" SelectedIndex="0">
+			<DbDetails>
+				<queryFormat>select nameCN,id from creator.ctu_resvstatus</queryFormat> 
+				</DbDetails></ComboBox>
+		<Label Name="lb_payStatus" Visible="true" Enabled="true" Size="50,20" Text="支付状态"/>
+		<ComboBox Name="CB_payStatus" Visible="true" Enabled="true" Size="100,100" Type="3" OnLoad="init" SelectedIndex="0">
+			<DbDetails>
+				<queryFormat>select nameCN,id from creator.ctu_paystatus</queryFormat> 
+				</DbDetails></ComboBox>
+		<Label Name="lb_code" Visible="false" Enabled="true" Size="30,50" Text="编号"/>
+		<TextBox Name="TB_code_resv" Visible="false" Enabled="false" ReadOnly="false" Size="30,20" Text="">
+				<OnEnChange><if cond="%{TB_code_resv}"><DbDetails/><submit namelist="DbDetails" next="billdetail"/>
+				<else/><submit next="billdetail" method="post" function="resetcontent"/></if>
+				</OnEnChange></TextBox>
+		<TAB/>
+		<BR/>
+		<Label Name="lb_demand" Visible="true" Enabled="true" Size="50,20" Text="客人要求"/>
+		<TextBox Name="TB_demand" Visible="true" Enabled="true" ReadOnly="false" Size="500,20" Text=""/>
+		<TAB/>
+		<BR/>
+		<ListCtrl Name="rmtplst" Visible="true" Enabled="true" Size="600,500" filtering="1,预定,预定,0"
+			Heading="客人姓名,20;状态,80;电话,80;邮件,80;订单总价,80;预定时间,100;预计入住,80;预计退房,80;房号,80;天数,80;房价明细,100;预定方式,80"
+			OnClick="SetText(TB_code_resv,%{reservation_id});SetSel(CB_resvStatus,%{status});SetText(TB_custName,%{custName});SetText(TB_demand,%{custDemand});SetSel(CB_roomTpye,%{roomtypename});SetSel(CB_payStatus,%{payStatus})">
+			<DbDetails>
+				<DbTable>creator.ctu_reservation</DbTable>
+				<Data>custName,getResvStatusName(status) as status,phone,custEmail,billTotal,FROM_UNIXTIME(reserved_date,'%Y-%m-%d %H:%i') as reserved_dt,FROM_UNIXTIME(checkindate,'%Y-%m-%d') as checkin, FROM_UNIXTIME(checkoutdate,'%Y-%m-%d') as checkout, roomno,cast((checkoutdate-checkindate)/86400 as SIGNED) as days,billDetail,src,roomtypename, agentid,reservation_id,guestid,book_id,roomtypeid, confirmed_by,confirmed_date,getPayStatusName(payStaus) as payStatus,custDemand</Data>
+				<Order>order by reservation_id</Order>
+				<queryFormat>select %{data} from %{dbtable} where hotel_id=%{hotelid} %{where} %{order}</queryFormat> 
+			</DbDetails>
+			<OnClick>
+				<assign name="TB_code_resv" expr="%{rmtplst[reservation_id]}" function="SetText"/>
+				<assign name="CB_resvStatus" expr="%{rmtplst[status]}" function="SetSel"/>
+				<assign name="TB_custName" expr="%{rmtplst[custName]}" function="SetText"/>
+				<assign name="TB_demand" expr="%{rmtplst[custDemand]}" function="SetText"/>
+				<assign name="CB_roomTpye" expr="%{rmtplst[roomtypename]}" function="SetSel"/>
+				<assign name="CB_payStatus" expr="%{rmtplst[payStatus]}" function="SetSel"/>
+			</OnClick>
+		</ListCtrl>
+		<TAB/><GroupBox Name="GBSearchs" Visible="true" Enabled="true" Text="查询"><Ctrls>
+		<DateTime Name="DtStart" Visible="true" Enabled="true" Format="yyyy-MM-dd" Size="100,20"/>
+		<BR/>
+		<DateTime Name="DtEnd" Visible="true" Enabled="true" Format="yyyy-MM-dd" Size="100,20" Text="4 day"/>
+		<BR/>
+		<Button Name="search" Visible="true" Enabled="true" Size="30,20" Text="查找" ToolTip="查询所选择的时间段预定订单">
+			<OnClick><DbDetails><Where>and checkindate between UNIX_TIMESTAMP('%{DtStart}') and UNIX_TIMESTAMP('%{DtEnd}')</Where></DbDetails>
+			<submit next="rmtplst" namelist="DbDetails" method="post"/></OnClick>
+			</Button>
+		<BR/>
+		<Button Name="searchToday" Visible="true" Enabled="true" Size="50,20" Text="今日入住" ToolTip="查询预定今日入住订单">
+			<OnClick><!--assign name="DtStart" expr="1 second"/-->
+				<DbDetails><Where>and checkindate = UNIX_TIMESTAMP(CURDATE())</Where></DbDetails>
+				<submit next="rmtplst" namelist="DbDetails" method="post"/></OnClick>
+			</Button>
+		<TAB/>
+		<Button Name="searchLatest" Visible="true" Enabled="true" Size="50,20" Text="今日预定" ToolTip="查询今日预定订单">
+			<OnClick>
+				<DbDetails><Where>and reserved_date between UNIX_TIMESTAMP(CURDATE()) and UNIX_TIMESTAMP(CURDATE())+86400</Where></DbDetails>
+				<submit next="rmtplst" namelist="DbDetails" method="post"/></OnClick>
+			</Button></Ctrls></GroupBox>
+		<BR  Size="610,180"/><TAB/><GroupBox Name="GBAction" Visible="true" Enabled="true" Text="操作"><Ctrls>
+		<Button Name="confirm" Visible="true" Enabled="true" Size="50,20" Text="确认预定" ToolTip="该操作表示门店知晓该预定，不需再次提醒。">
+			<OnClick><if cond="%{CB_resvStatus[id]}==1">
+			<DbDetails><queryFormat>update creator.ctu_reservation set confirmed_date=UNIX_TIMESTAMP(),confirmed_by='%{user_id}' where reservation_id='%{rmtplst[reservation_id]}'</queryFormat></DbDetails><submit next="confirm" namelist="DbDetails" method="post"/>
+			<DbDetails/><submit next="rmtplst" namelist="DbDetails" method="post"/>
+			</if></OnClick></Button>
+		<BR Size="0,25"/>
+ 		<Button Name="expired" Visible="true" Enabled="true" Size="50,20" Text="置失效" Clickneedconfirm="true" ToolTip="该操作将改变所选订单为失效状态。">
+			<OnClick><if cond="%{CB_resvStatus[id]}==1">
+			<DbDetails><queryFormat>update creator.ctu_reservation set status=5 where reservation_id='%{rmtplst[reservation_id]}'</queryFormat></DbDetails><submit next="expired" namelist="DbDetails" method="post"/>
+			<DbDetails/><submit next="rmtplst" namelist="DbDetails" method="post"/>
+			</if></OnClick></Button>
+ 		<Button Name="canceled" Visible="true" Enabled="true" Size="50,20" Text="置取消" Clickneedconfirm="true" ToolTip="该操作将改变所选订单为取消状态。">
+			<OnClick><if cond="%{CB_resvStatus[id]}==1">
+			<DbDetails><queryFormat>update creator.ctu_reservation set status=2 where reservation_id='%{rmtplst[reservation_id]}'</queryFormat></DbDetails><submit next="canceled" namelist="DbDetails" method="post"/>
+			<DbDetails/><submit next="rmtplst" namelist="DbDetails" method="post"/>
+			</if></OnClick></Button>
+		<BR/>
+		<Label Name="lb_roomno" Visible="true" Enabled="true" Size="50,20" Text="可用房间"/>
+		<ComboBox Name="CB_roomAvlb" Visible="true" Enabled="true" Size="60,100" Type="3" SelectedIndex="0">
+			<DbDetails>
+			<queryFormat>select roomno,roomid,getRoomPrice(%{CB_roomTpye[roomtypeid]},CURDATE()) as price,description from creator.ctu_rooms where roomtypeid=%{CB_roomTpye[roomtypeid]} and roomstatus=1</queryFormat> 
+			</DbDetails>
+			<OnSELENDOK>
+			<assign name="TB_desc" expr="%{CB_roomAvlb[description]}"/>
+			<assign name="TB_price" expr="%{CB_roomAvlb[price]}"/>
+				</OnSELENDOK>
+			</ComboBox>
+		<BR/>
+		<TextBox Name="TB_desc" Visible="true" Enabled="true" ReadOnly="true" Size="100,50" tooltip="房间信息"/>
+		<BR autoheight="1"/>
+		<TextBox Name="TB_price" Visible="true" Enabled="true" ReadOnly="true" Size="100,20" tooltip="门市价"/>
+		<BR/>
+		<TextBox Name="TB_deposit" Visible="true" Enabled="true" ReadOnly="false" Size="60,20" tooltip="入住押金" Number="1"/>
+		<Button Name="deposit" Visible="true" Enabled="true" Size="50,20" Text="预收押金" Clickneedconfirm="true" ToolTip="若客人办理入住需收取押金，在“入住押金”输入相应金额后“预收押金”。">
+			<OnClick><if cond="!%{TB_deposit}"><alert next="deposit" expr="押金不能为空"/>
+			<elseif cond="!%{rmtplst[guestid]}"/><alert next="deposit" expr="客人信息不正确"/>
+			<elseif cond="!%{rmtplst[reservation_id]}"/><alert next="deposit" expr="订单信息不正确"/>
+			<else/><DbDetails><queryFormat>insert into creator.ctu_billdetails (itemid, user_id, resvation_id,hotel_id,expense, itype, created_by, created_dt) values(16,'%{rmtplst[guestid]}','%{rmtplst[reservation_id]}',%{hostels.TB_code},%{TB_deposit}*100,0,'%{user_id}',UNIX_TIMESTAMP())</queryFormat></DbDetails><submit namelist="DbDetails" method="post"/>
+			<DbDetails/><submit namelist="DbDetails" next="billdetail"/></if></OnClick></Button>
+ 		<BR/><ListCtrl Name="billdetail" Visible="true" Enabled="true" Size="120,80"
+			Heading="类别,80;金额,80;时间,80;操作员,80">
+			<DbDetails>
+				<DbTable>creator.ctu_billdetails as b inner join creator.ctu_user as u on b.created_by=u.user_id inner join creator.ctu_billtypes as t on t.itemid=b.itemid</DbTable>
+				<Data>itemCN,expense/100 as expense,FROM_UNIXTIME(created_dt,'%Y-%m-%d %H:%i') as dt,user_loginname</Data>
+				<Order>order by dt</Order>
+				<queryFormat>select %{data} from %{dbtable} where resvation_id='%{TB_code_resv}' %{where} %{order}</queryFormat> 
+			</DbDetails>
+		</ListCtrl>
+		<BR autoheight="1"/>
+		<Button Name="insert" Visible="true" Enabled="true" Size="50,20" Text="办理入住" Clickneedconfirm="true" ToolTip="根据所选订单选择可用房间方可办理入住。">
+			<OnClick><if cond="%{CB_resvStatus[id]}==1">
+			<if cond="!%{CB_roomAvlb[roomid]}"><alert next="CB_roomAvlb" expr="%{lb_roomno}不能为空"/>
+			<else/><DbDetails><queryFormat>insert into creator.ctu_bookin (hotel_id, roomid,roomNo, roomtypeid,roomType,reservation_id,guestid,custName,checkindate,checkoutdate,checkedin_date,checkedin_by) values(%{hostels.TB_code},'%{CB_roomAvlb[roomid]}','%{CB_roomAvlb[roomno]}',%{CB_roomTpye[roomtypeid]},'%{CB_roomTpye[roomtype]}','%{rmtplst[reservation_id]}','%{rmtplst[guestid]}','%{rmtplst[custName]}',UNIX_TIMESTAMP('%{rmtplst[checkin]}'),UNIX_TIMESTAMP('%{rmtplst[checkout]}'),UNIX_TIMESTAMP(),'%{user_id}')</queryFormat></DbDetails><submit next="insert" namelist="DbDetails" method="post"/>
+			<DbDetails/><submit next="rmtplst" namelist="DbDetails" method="post"/><submit next="CB_roomAvlb" method="post" function="resetcontent"/>
+			</if><else/><if cond="%{CB_resvStatus[id]}==7"><alert next="CB_roomAvlb" expr="预留订单请在门店预留入住办理入住"/><else/><alert next="CB_roomAvlb" expr="非预定状态订单不能办理入住"/></if></if></OnClick></Button>
+			</Ctrls></GroupBox>
+		</Ctrls></GroupBox>
+ 		<ListCtrl Name="resvNew" Visible="false" Enabled="false" ReadOnly="false" Size="30,20" Text="最新预定" NULLChanged="1">
+			<DbDetails>
+				<queryFormat>select custName,roomtypename from creator.ctu_reservation where hotel_id=%{hotelid} and confirmed_by=0 and status=1 and checkindate &gt;= UNIX_TIMESTAMP(CURDATE()) order by reservation_id desc limit 0,3</queryFormat> 
+			</DbDetails></ListCtrl>
+		<Button Name="searchResvNew" Visible="false" Enabled="true" Size="50,20" Text="最新预定">
+			<OnClick><DbDetails/><submit namelist="DbDetails" next="resv.resvNew"/></OnClick></Button>
+	</Ctrls>
+	<OnActivate><DbDetails/>
+		<if cond="'%{session.hotel_id}'&&(%{hotelid}!=%{session.hotel_id})">
+			<assign name="hotelid" expr="%{session.hotel_id}"/>
+			<DbDetails/><submit namelist="DbDetails" next="CB_roomTpye"/></if>
+		<if cond="%{rmtpChg}!=%{roomtype.ChangeId}">
+			<assign name="rmtpChg" expr="%{roomtype.ChangeId}"/>
+			<DbDetails/><submit namelist="DbDetails" next="CB_roomTpye"/></if>
+		<submit next="search" method="post" function="click"/></OnActivate>
+	<OnChanged><if cond="%{resv.resvNew[IsDataChanged]}>0"><if cond="%{resv.resvNew[SnapShot]}"><!--info next="tst" expr="您有新预定 %{resv.OnChangedCtrl} %{resv.resvNew[SnapShot]}"/%{resv.OnChangedCtrl} --><notify next="tst" expr="您有新预定 %{resv.resvNew[SnapShot]}"/></if></if>
+		<!--if cond="%{resv.resvNew}"><if cond="!%{session.resvNewId}">
+		<notify next="tst" expr="您有新预定 %{resv.resvNew[custName]}"/>
+		<assign name="session.resvNewId" expr="%{resv.resvNew}"/>
+		<elseif cond="%{resv.resvNew}!=%{session.resvNewId}"/>
+		<notify next="tst" expr="您有新预定 %{resv.resvNew[custName]}"/>
+		<assign name="session.resvNewId" expr="%{resv.resvNew}"/></if>
+		</if--></OnChanged>
+	<!--OnTBNotifierRtn><alert next="CB_roomAvlb" expr="OnTaskbarNotifierRtn"/></OnTBNotifierRtn-->
+</WndTap>

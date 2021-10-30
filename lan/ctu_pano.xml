@@ -1,0 +1,40 @@
+<Language name="ctu_pano">
+<Lang name="ctu_pano" value="ctu_pano"/>
+<Lang name="TabEditctu_pano" value="ctu_pano Edit"/>
+<Lang name="TabViewctu_pano" value="ctu_pano View"/>
+<Lang name="shortid" value=""/>
+<Lang name="ttp_shortid" value=""/>
+<Lang name="img" value=""/>
+<Lang name="ttp_img" value=""/>
+<Lang name="pano" value=""/>
+<Lang name="ttp_pano" value=""/>
+<Lang name="info" value=""/>
+<Lang name="ttp_info" value=""/>
+<Lang name="lats" value=""/>
+<Lang name="ttp_lats" value=""/>
+<Lang name="latn" value=""/>
+<Lang name="ttp_latn" value=""/>
+<Lang name="reftbl" value=""/>
+<Lang name="ttp_reftbl" value=""/>
+<Lang name="refkey" value=""/>
+<Lang name="ttp_refkey" value=""/>
+<Lang name="refid" value=""/>
+<Lang name="ttp_refid" value=""/>
+<Lang name="pano_id" value=""/>
+<Lang name="ttp_pano_id" value=""/>
+<Lang name="ttp_operationctu_pano" value="操作"/>
+<Lang name="ttp_createctu_pano" value="新增"/>
+<Lang name="ttp_modifyctu_pano" value="修改"/>
+<Lang name="ttp_resetctu_pano" value="清除数据"/>
+<Lang name="ttp_deletectu_pano" value="删除"/>
+<Lang name="ttp_refreshctu_pano" value="刷新"/>
+<Lang name="operation" value="操作"/>
+<Lang name="create" value="新增"/>
+<Lang name="modify" value="修改"/>
+<Lang name="reset" value="复位"/>
+<Lang name="delete" value="删除"/>
+<Lang name="refresh" value="刷新"/>
+<Lang name="firstpage" value="首页"/>
+<Lang name="prepage" value="上页"/>
+<Lang name="nextpage" value="下页"/>
+</Language>

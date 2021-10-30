@@ -1,0 +1,84 @@
+﻿<WndTap Name="rooms" Text="客房信息">
+	<var name="hotelid" expr="0"/>
+	<var name="rmtpChg" expr="0"/>
+	<Ctrls>
+		<GroupBox Name="GroupBox1" Visible="true" Enabled="true" Text="客房信息"><Ctrls>
+		<Label Name="lb_roomno" Visible="true" Enabled="true" Size="50,20" Text="房间号"/>
+		<TextBox Name="TB_roomno" Visible="true" Enabled="true" ReadOnly="false" Size="30,20" Text=""/>
+		<TAB/>
+		<Label Name="lb_name" Visible="true" Enabled="true" Size="50,20" Text="房间类型"/>
+		<ComboBox Name="CB_roomTpye" Visible="true" Enabled="true" Size="100,100" Type="3" OnLoad="init" SelectedIndex="1">
+			<DbDetails>
+			<queryFormat>select roomtype,roomtypeid from creator.ctu_roomtype where hotel_id=%{hotelid}</queryFormat> 
+			</DbDetails></ComboBox>
+		<TAB/>
+		<Label Name="lb_name" Visible="true" Enabled="true" Size="50,20" Text="房间状态"/>
+		<ComboBox Name="CB_roomStatus" Visible="true" Enabled="true" Size="100,100" Type="3" OnLoad="init" SelectedIndex="0">
+			<DbDetails>
+				<queryFormat>select status_cn,id from creator.ctu_roomstatus</queryFormat> 
+				</DbDetails></ComboBox>
+		<Label Name="lb_code" Visible="false" Enabled="true" Size="30,20" Text="编号"/>
+		<TextBox Name="TB_code_rmtp" Visible="false" Enabled="false" ReadOnly="false" Size="30,20" Text="">
+			<DbDetails>
+				<DbTable></DbTable>
+				<Index></Index>
+				<Data></Data>
+				<Order></Order>
+				<Where>where hotel_id=%{hotelid}</Where>
+				<queryFormat>select roomid from creator.ctu_rooms %{where} order by roomid desc limit 0,1</queryFormat> 
+				</DbDetails>
+			</TextBox>       
+		<BR/>
+		<Label Name="lb_name" Visible="true" Enabled="true" Size="50,20" Text="房间概况"/>
+		<TextBox Name="TB_detail_rmtp" Visible="true" Enabled="true" ReadOnly="false" Size="500,20" Text=""/>
+		<TAB/>
+		<BR/>
+		<ListCtrl Name="rmtplst" Visible="true" Enabled="true" Size="600,500"
+			Heading="房间号码,50;房型ID,50;房型名,50;房间概况,100;房间状态,20;开始时间,80; 结束时间,80;">
+			<DbDetails>
+				<DbTable>creator.ctu_rooms r inner join creator.ctu_roomstatus s on r.roomstatus=s.id</DbTable>
+				<Data>r.roomno, r.roomtypeid, r.roomname, r.description, s.status_cn, FROM_UNIXTIME(r.checkindt,'%Y-%m-%d %H:%i') as indt,FROM_UNIXTIME(r.checkoutdt,'%Y-%m-%d %H:%i') as outdt,r.roomid</Data>
+				<Order>order by roomid</Order>
+				<Where>where hotel_id=%{hotelid}</Where>
+				<queryFormat>select %{data} from %{dbtable} %{where} %{order}</queryFormat> 
+			</DbDetails>
+			<OnClick>
+				<assign name="TB_code_rmtp" expr="%{rmtplst[roomid]}" function="SetText"/>
+				<assign name="TB_roomno" expr="%{rmtplst[roomno]}" function="SetText"/>
+				<assign name="TB_detail_rmtp" expr="%{rmtplst[description]}" function="SetText"/>
+				<assign name="CB_roomTpye" expr="%{rmtplst[roomname]}" function="SetSel"/>
+				<assign name="CB_roomStatus" expr="%{rmtplst[status_cn]}" function="SetSel"/>
+				<if cond="%{rmtplst[actived]}"><SetVisible name="GroupBox1Child" Visible="0"/><else/><SetVisible name="GroupBox1Child" Visible="1"/></if>
+				</OnClick>
+		</ListCtrl>
+		<TAB/><GroupBox Name="GroupBoxChild" Visible="true" Enabled="true" Text="操作"><Ctrls>
+		<Button Name="insert" Visible="true" Enabled="true" Size="30,20" Text="新增" ToolTip="创建一个房间供客人入住，设定房间号、房型、房间状态、房间概况等参数">
+			<OnClick>
+			<if cond="!%{TB_roomno}"><alert next="TB_roomno" expr="%{lb_roomno}不能为空"/>
+			<else/><DbDetails><queryFormat>insert into creator.ctu_rooms (hotel_id, roomno, roomtypeid, roomname, description, roomstatus) values(%{hostels.TB_code},'%{TB_roomno}',%{CB_roomTpye[roomtypeid]},'%{CB_roomTpye[roomtype]}','%{TB_detail_rmtp}',1)</queryFormat></DbDetails><submit next="insert" namelist="DbDetails" method="post"/>
+			<DbDetails/><submit next="TB_code_rmtp" namelist="DbDetails" method="post"/><submit namelist="DbDetails" next="rmtplst"/>
+			</if></OnClick></Button>
+		<TAB/>
+		<Button Name="update" Visible="true" Enabled="true" Size="30,20" Text="修改" ToolTip="修改所选房间的参数，可修改房间号、房型、房间状态、房间概况等参数">
+			<OnClick><DbDetails><queryFormat>Update creator.ctu_rooms set roomno='%{TB_roomno}', roomtypeid=%{CB_roomTpye[roomtypeid]}, roomname='%{CB_roomTpye[roomtype]}', description='%{TB_detail_rmtp}' where roomid=%{TB_code_rmtp}</queryFormat></DbDetails><submit namelist="DbDetails" method="post"/>
+			<DbDetails/><submit namelist="DbDetails" next="rmtplst"/></OnClick></Button>
+		<BR/>
+		<Button Name="search" Visible="true" Enabled="true" Size="30,20" Text="刷新">
+			<OnClick><DbDetails><where>where hotel_id=%{hotelid}</where></DbDetails><submit next="rmtplst" namelist="DbDetails" method="post"/></OnClick>
+			</Button>
+		<TAB/>
+		<Button Name="update1" Visible="true" Enabled="true" Size="30,20" Text="空房" ToolTip="将所选择的房间置为空房，多在客房打扫完毕操作">
+			<OnClick><DbDetails><queryFormat>Update creator.ctu_rooms set roomstatus=1 where roomid=%{TB_code_rmtp}</queryFormat></DbDetails><submit namelist="DbDetails" method="post"/>
+			<DbDetails/><submit namelist="DbDetails" next="rmtplst"/></OnClick></Button>
+			</Ctrls></GroupBox>
+		</Ctrls></GroupBox>
+	</Ctrls>
+	<OnActivate>
+		<if cond="'%{session.hotel_id}'&&(%{hotelid}!=%{session.hotel_id})">
+			<assign name="hotelid" expr="%{session.hotel_id}"/>
+			<DbDetails/><submit namelist="DbDetails" next="CB_roomTpye"/></if>
+		<if cond="%{rmtpChg}!=%{roomtype.ChangeId}">
+			<assign name="rmtpChg" expr="%{roomtype.ChangeId}"/>
+			<DbDetails/><submit namelist="DbDetails" next="CB_roomTpye"/></if>
+		<DbDetails/><submit namelist="DbDetails" next="rmtplst"/></OnActivate>
+</WndTap>

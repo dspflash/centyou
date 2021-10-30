@@ -1,0 +1,22 @@
+﻿<WndTap Name="ctu_pano_pick" Text="ctu_pano_Pick">
+<var name="searchtmpl"><path format="(c.path like '%%{opvalue}%')"/><img format="(c.img like '%%{opvalue}%')"/><pano format="(c.pano like '%%{opvalue}%')"/><info format="(c.info like '%%{opvalue}%')"/><lats format="(c.lats like '%%{opvalue}%')"/><latn format="(c.latn like '%%{opvalue}%')"/><reftbl format="(c.reftbl like '%%{opvalue}%')"/><refkey format="(c.refkey like '%%{opvalue}%')"/><refid format="(c.refid like '%%{opvalue}%')"/><pano_id format="(c.pano_id like '%%{opvalue}%')"/><shortid format="(c.shortid like '%%{opvalue}%')"/><visited format="(c.visited like '%%{opvalue}%')"/><lastvisitdt format="(c.lastvisitdt between '%{lastvisitdt[datetime]}' and '%{lastvisitdt[datetime2]}')"/></var>
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="lan\ctu_pano.xml"/>
+<Ctrls><GroupBox  Name="GBctu_pano" id="ctu_pano" Text="ctu_pano" Size="100,100"><Ctrls>
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="ctu_pano_Vs.xml"/>
+<BR AutoHeight="1"/><GroupBox  Name="GBOPVctu_pano" Size="100,20" cols="xs12 sm6 md4"><Ctrls>
+<Button Text="reset" ToolTip="ttp_resetctu_pano" Name="resetctu_pano" Size="50,20">	<OnClick>	<submit next="GBDEDITctu_pano" function="reset"/>	</OnClick>	</Button><TAB/>	
+<Button Text="Search" ToolTip="ttp_gsearchctu_pano" Name="gsearchctu_pano" Size="50,20">	<OnClick>	
+<search next="ctu_pano_vLst" listed="0" prefixwhere="0" prefixand="0" inputed="1">%{searchtmpl}</search><submit next="GBDEDITctu_pano" namelist="search" function="search"/>	
+</OnClick></Button><TAB/></Ctrls></GroupBox>
+<BR AutoHeight="1"/><GroupBox Name="GBDVctu_pano" cols="xs12 sm12 md12 lg12"><Ctrls>
+<ListCtrl Name="ctu_pano_vLst" ToolTip="ttp_ctu_pano_v" Size="700,450" Heading="path,120;img,120;pano,120;info,640;lats,20;latn,20;reftbl,120;refkey,120;refid,55;pano_id,55;shortid,50;visited,55;lastvisitdt,150;" loadedclick="0">
+	<DbDetails >
+<Index>pano_id</Index>
+<DbTable>creator.ctu_pano c</DbTable>
+<Data>c.path,c.img,c.pano,c.info,c.lats,c.latn,c.reftbl,c.refkey,c.refid,c.pano_id,c.shortid,c.visited,c.lastvisitdt</Data>
+<Order>pano_id</Order></DbDetails>
+<OnClick><if cond="%{ctu_pano_vLst[pano_id]}"><DbDetails><Where>pano_id='%{ctu_pano_vLst[pano_id]}'</Where></DbDetails><submit namelist="DbDetails" next="$parent.%{frmwndctrl}"/><submit function="onok"/></if></OnClick>
+</ListCtrl>
+</Ctrls></GroupBox>
+</Ctrls></GroupBox>
+</Ctrls></WndTap>

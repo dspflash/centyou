@@ -1,0 +1,23 @@
+﻿<GroupBox Name="GBDEDITctu_hotels" text="Search" toggle="1"><Ctrls>
+<GroupBox Name="BasicInfo" Text="BasicInfo" feature="tab"><Ctrls>
+<GroupBox Name="GB_hotelname" Multiline="0" cols="xs12 sm6 md4"><Ctrls>
+<Label Name="lb_hotelname" Size="60,20" Text="hotelname" Align="Right"/>
+<TextBox Name="hotelname" Size="150,20" Text="" Weight="150" ToolTip="ttp_hotelname"></TextBox>
+<MagicCtrl Name="dialhotelname" button="type:0" images=" ,data/startcall_green.png" Size="20,20" OnClick="nis3ucs:%{hotelname}" ToolTip="DialToCall"/>
+</Ctrls></GroupBox>
+<GroupBox Name="GB_mobile" Multiline="0" cols="xs12 sm6 md4"><Ctrls>
+<Label Name="lb_mobile" Size="60,20" Text="mobile" Align="Right"/>
+<TextBox Name="mobile" Size="150,20" Text="" Weight="150" ToolTip="ttp_mobile"></TextBox>
+<MagicCtrl Name="dialmobile" button="type:0" images=" ,data/startcall_green.png" Size="20,20" OnClick="nis3ucs:%{mobile}" ToolTip="DialToCall"/>
+</Ctrls></GroupBox>
+<GroupBox Name="GB_cityname" Multiline="0" cols="xs12 sm6 md4"><Ctrls>
+<Label Name="lb_cityname" Size="60,20" Text="cityname" Align="Right"/>
+<TextBox Name="cityname" Size="150,20" Text="" Weight="150" ToolTip="ttp_cityname">
+	<DbDetails>
+<Index>city_code</Index>
+<DbTable>creator.ctu_city</DbTable>
+<Data>city_name,city_code</Data>
+<Where></Where>
+<queryFormat></queryFormat></DbDetails><OnEnChange><if cond="%{cityname[city_code]}"><assign name="cityid" expr="%{cityname[city_code]}"/></if></OnEnChange></TextBox>
+<MagicCtrl Name="pickcityname" Link="tip:Pick" images=",data/search.png" button="type:0" Size="20,20"><OnClick><assign name="$this.citypick.frmwndctrl" expr="cityname"/></OnClick></MagicCtrl>\r\n</Ctrls></GroupBox>
+</Ctrls></GroupBox></Ctrls></GroupBox>

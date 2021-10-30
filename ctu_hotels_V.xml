@@ -1,0 +1,20 @@
+﻿<WndTap Name="ctu_hotels_v" Text="ctu_hotels_v">
+<WndTaps>
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="ctu_hotels_Ve.xml" popup="1"/>
+</WndTaps>
+<var name="searchtmpl"><hotelname format="(c.hotelname like '%%{opvalue}%')"/><mobile format="(c.mobile like '%%{opvalue}%')"/><phone format="(c.phone like '%%{opvalue}%')"/><cityname format="c.cityname='%{opvalue}'"/><cityid format="(c.cityid like '%%{opvalue}%')"/><address format="(c.address like '%%{opvalue}%')"/><email format="(c.email like '%%{opvalue}%')"/><opendate format="(c.opendate between '%{opendate[datetime]}' and '%{opendate[datetime2]}')"/><url format="(c.url like '%%{opvalue}%')"/><qq format="(c.qq like '%%{opvalue}%')"/><star format="(c.star like '%%{opvalue}%')"/><manager_id format="c.manager_id='%{opvalue}'"/><manager format="(c.manager like '%%{opvalue}%')"/><chain_name format="(c.chain_name like '%%{opvalue}%')"/><chain_id format="c.chain_id='%{opvalue}'"/><picture format="(c.picture like '%%{opvalue}%')"/><album format="(c.album like '%%{opvalue}%')"/><mappoint format="(c.mappoint like '%%{opvalue}%')"/><min_price format="(c.min_price like '%%{opvalue}%')"/><max_price format="(c.max_price like '%%{opvalue}%')"/><uptime format="(c.uptime like '%%{opvalue}%')"/><tags format="(c.tags like '%%{opvalue}%')"/><actived format="c.actived is %{opvalue}"/><traffic format="(c.traffic like '%%{opvalue}%')"/><pubphones format="(c.pubphones like '%%{opvalue}%')"/><contactinfo format="(c.contactinfo like '%%{opvalue}%')"/><content format="(c.content like '%%{opvalue}%')"/><delicacy format="(c.delicacy like '%%{opvalue}%')"/><service format="(c.service like '%%{opvalue}%')"/><boss format="(c.boss like '%%{opvalue}%')"/><canyin format="(c.canyin like '%%{opvalue}%')"/><roomdetails format="(c.roomdetails like '%%{opvalue}%')"/><decoration format="(c.decoration like '%%{opvalue}%')"/><nearbyhotels format="(c.nearbyhotels like '%%{opvalue}%')"/><nearbypoints format="(c.nearbypoints like '%%{opvalue}%')"/><scenic format="(c.scenic like '%%{opvalue}%')"/><bedprice format="(c.bedprice like '%%{opvalue}%')"/><specialty format="(c.specialty like '%%{opvalue}%')"/><remark format="(c.remark like '%%{opvalue}%')"/><hotel_id format="(c.hotel_id like '%%{opvalue}%')"/></var>
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="lan\ctu_hotels.xml"/>
+<Ctrls><GroupBox  Name="GBctu_hotels" id="ctu_hotels" Text="ctu_hotels" Size="100,100"><Ctrls>
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="ctu_hotels_Vs.xml"/>
+<BR AutoHeight="1"/><GroupBox  Name="GBOPVctu_hotels" Size="100,20" cols="xs12 sm6 md4"><Ctrls>
+<Button Text="addone" ToolTip="ttp_addone" Name="addone" Size="50,20">	<OnClick><submit next="$this.ctu_hotels.GBDEDITctu_hotels" function="reset"/><assign name="$this.ctu_hotels.frmwndctrl" expr="%{$this.ctu_hotels_vLst}"/></OnClick>	</Button><TAB/>	
+<Button Text="reset" ToolTip="ttp_resetctu_hotels" Name="resetctu_hotels" Size="50,20">	<OnClick>	<submit next="GBDEDITctu_hotels" function="reset"/>	</OnClick>	</Button><TAB/>	
+<Button Text="Search" ToolTip="ttp_gsearchctu_hotels" Name="gsearchctu_hotels" Size="50,20">	<OnClick>	
+<search next="ctu_hotels_vLst" listed="0" prefixwhere="0" prefixand="1" inputed="1">%{searchtmpl}</search><submit next="GBDEDITctu_hotels" namelist="search" function="search"/>	
+<search next="records_ctu_hotels" listed="0" prefixwhere="0" prefixand="1"  inputed="1">%{searchtmpl}</search><submit next="GBDEDITctu_hotels" namelist="search" function="search"/>	
+</OnClick></Button><TAB/></Ctrls></GroupBox>
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="ctu_hotels_Vpg.xml"/>
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="ctu_hotels_Vpgop.xml"/>
+<BR AutoHeight="1"/><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="ctu_hotels_Vv.xml"/>
+</Ctrls></GroupBox>
+</Ctrls></WndTap>

@@ -1,0 +1,258 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<WndTap Name="hostels" Text="酒店管理">
+	<var name="hotelonlys" expr=""/>
+	<var name="user_id_catch" expr=""/>
+	<Ctrls>
+		<GroupBox Name="GroupBox1" Size="750,220" Text="基本资料"><Ctrls>
+		<Label Name="lb_name" Size="30,20" Text="店名"/>
+		<TextBox Name="TB_name" ReadOnly="false" Size="100,20" Text=""/>
+		<Button Name="search_n" Size="15,20" Text="搜">
+			<OnClick><if cond="%{TB_name}"><DbDetails><where>where HotelName like '%%{TB_name}%'</where></DbDetails><submit next="innsLst" namelist="DbDetails" method="post"/></if></OnClick></Button>
+		<TAB/>
+		<Label Name="lb_manager" Size="40,20" Text="负责人"/>
+		<TextBox Name="TB_manager" ReadOnly="false" Size="50,20" Text=""/>
+		<TAB/>
+		<Label Name="lb_moblie" Size="50,20" Text="移动电话"/>
+		<TextBox Name="TB_mobile" ReadOnly="false" Size="80,20" Text=""/>
+		<Button Name="search_m" Size="15,20" Text="搜">
+			<OnClick><if cond="%{TB_mobile}"><DbDetails><where>where (mobile='%{TB_mobile}' or phone='%{TB_mobile}')</where></DbDetails><submit next="innsLst" namelist="DbDetails" method="post"/></if></OnClick></Button>
+		<Button Name="dial0" Text="呼叫" Size="30,20"
+			OnClick="nis3ucs:%{TB_mobile}"></Button>
+		<TAB/>
+		<Label Name="lb_phone" Size="50,20" Text="固定电话"/>
+		<TextBox Name="TB_phone" ReadOnly="false" Size="80,20" Text=""/>
+		<Button Name="dial" Text="呼叫" Size="30,20"
+			OnClick="nis3ucs:%{TB_phone}"></Button>
+		<TextBox Name="TB_picinn" ReadOnly="false" Size="40,20" Text="" ToolTip="门店相册"/>
+		<TextBox Name="TB_album" ReadOnly="false" Size="40,20" Text="" ToolTip="周边摄影相册"/>
+		<Label Name="lb_code" Visible="false" Enabled="true" Location="30,30" Size="30,20" Text="编号"/>
+		<TextBox Name="TB_code" Visible="false" Enabled="true" Size="30,20" ReadOnly="false" Text=""> 
+			<DbDetails>
+			<DbTable></DbTable>
+			<Data></Data>
+			<Order></Order>
+			<Where></Where>
+			<queryFormat>select hotel_id from creator.ctu_hotels %{where} order by hotel_id desc limit 0,1</queryFormat> 
+			</DbDetails>
+			<OnEnChange><if cond="%{TB_code}"><DbDetails></DbDetails><submit next="HistoryList" namelist="DbDetails" method="post"/>
+			<assign name="CB_content" expr="-1" function="SetSel"/>
+			<assign name="TB_remarkh" expr=" " function="SetText"/>
+			<else/><submit next="HistoryList" method="post" function="resetcontent"/></if></OnEnChange>
+			</TextBox>
+		<BR/>
+		<Label Name="lb_addr" Size="30,20" Text="地址"/>
+		<ComboBox Name="provinces" Size="60,200" Type="3" OnLoad="init" SelectedIndex="-1">
+			<DbDetails>
+			<queryFormat>select province_name,province_code from creator.ctu_province</queryFormat> 
+			</DbDetails>
+			<!--OnEditChange>
+				<DbDetails>
+				<DbTable></DbTable>
+				<Index></Index>
+				<Data></Data>
+				<Order></Order>
+				<Where></Where>
+				<queryFormat>select province_name,province_code from ctu_province where province_name like '%%{provinces[WindowText]}%'</queryFormat> 
+				</DbDetails>
+				<submit next="provinces" namelist="DbDetails" method="post"/>
+			</OnEditChange-->
+			<OnSELENDOK><if cond="%{provinces[province_code]}">
+				<DbDetails>
+				<queryFormat>select city_name,city_code from creator.ctu_city where city_province_code=%{provinces[province_code]} and city_area_code=0</queryFormat> 
+				</DbDetails>
+				<submit next="areas" namelist="DbDetails" method="post"/>
+				<else/><submit next="areas" function="resetcontent"/>
+				</if></OnSELENDOK>
+			</ComboBox>
+		<ComboBox Name="areas" Size="60,200" Type="3" SelectedIndex="-1">
+			<OnSELENDOK><if cond="%{areas[city_code]}">
+				<DbDetails>
+				<queryFormat>select city_name,city_code from creator.ctu_city where city_area_code=%{areas[city_code]}</queryFormat> 
+				</DbDetails>
+				<submit next="citys" namelist="DbDetails" method="post"/>
+				<else/><submit next="citys" function="resetcontent"/>
+				</if></OnSELENDOK>
+			</ComboBox>
+		<ComboBox Name="citys" Type="3" Size="100,300" SelectedIndex="-1">
+			<OnSELENDOK>
+				<if cond="%{citys}"><assign name="TB_addr" expr="%{provinces}%{citys}"/></if>
+				</OnSELENDOK></ComboBox>
+		<TextBox Name="TB_addr" ReadOnly="false" Size="260,20" Text=""/>
+		<TAB/>
+		<DateTime Name="OpenDT" Size="80,20" Format="yyyy-MM-dd"></DateTime>
+		<ComboBox Name="chainBrand" Size="100,100" Type="3" OnLoad="init" SelectedIndex="1">
+			<DbDetails>
+			<queryFormat>select chain_name_cn,chain_id from creator.ctu_chainbrand</queryFormat> 
+			</DbDetails></ComboBox>
+		<BR/>
+
+		<TextBox Name="TB_Content" Size="600,160" ToolTip="酒店/客栈概况" EscapeString="&lt;BR/&gt;" />
+		<TextBox Name="TB_traffic" Size="600,160" overlap="pre" visible="0" ToolTip="交通说明" EscapeString="&lt;BR/&gt;" />
+		<TextBox Name="TB_boss" Size="600,160" overlap="pre" visible="0" ToolTip="老板简介" EscapeString="&lt;BR/&gt;" />
+		<TextBox Name="TB_Service" Size="600,160" overlap="pre" visible="0" ToolTip="配套服务" EscapeString="&lt;BR/&gt;" />
+		<TextBox Name="TB_BedPrice" Size="600,160" overlap="pre" visible="0" ToolTip="房型价格" EscapeString="&lt;BR/&gt;" />
+		<TextBox Name="TB_Scenic" Size="600,160" overlap="pre" visible="0" ToolTip="客栈周边景点" EscapeString="&lt;BR/&gt;" />
+		<TextBox Name="TB_delicacy" Size="600,160" overlap="pre" visible="0" ToolTip="客栈周边美食地图" EscapeString="&lt;BR/&gt;" />
+		<TextBox Name="TB_Specialty" Size="600,160" overlap="pre" visible="0" ToolTip="客栈周边特产" EscapeString="&lt;BR/&gt;" />
+		<TextBox Name="TB_pubphones" Size="600,160" overlap="pre" visible="0" ToolTip="当地旅游常用电话" EscapeString="&lt;BR/&gt;" />
+		<TextBox Name="TB_Tags" Size="600,160" overlap="pre" visible="0" ToolTip="客栈标签" EscapeString="&lt;BR/&gt;" />
+		<TextBox Name="TB_remark" Size="600,160" overlap="pre" visible="0" EscapeString="&lt;br&gt;" ToolTip="备注"/>
+		<TAB/><GroupBox Name="GroupBox1Child" Text="操作"><Ctrls>
+		<ComboBox Name="InService" Size="80,100" Type="3" Items="暂停服务|服务中" SelectedIndex="1"></ComboBox>
+		<BR/><Button Name="insert" Size="30,20" Text="新增">
+			<OnClick>
+			<if cond="!%{TB_name}"><alert next="TB_name" expr="%{lb_name}不能为空"/>
+			<else/><DbDetails><queryFormat>insert into creator.ctu_hotels (HotelName, phone, mobile, Traffic, Service, Address, Content, CityID,CityName, manager,manager_id, chain_name,chain_id,remark,opendate,uptime,picture,album,BedPrice,Scenic,delicacy, Specialty, pubphones, Tags,boss) values('%{TB_name}','%{TB_phone}','%{TB_mobile}','%{TB_traffic}','%{TB_Service}','%{TB_addr}','%{TB_Content}','%{citys[city_code]}','%{citys[city_name]}','%{TB_manager}',%{user_code},'%{chainBrand[chain_name_cn]}',%{chainBrand[chain_id]},'%{TB_remark}','%{OpenDT}',UNIX_TIMESTAMP(),'%{TB_picinn}','%{TB_album}','%{TB_BedPrice}','%{TB_Scenic}','%{TB_delicacy}','%{TB_Specialty}','%{TB_pubphones}','%{TB_Tags}','%{TB_boss}')</queryFormat></DbDetails><submit next="insert" namelist="DbDetails" method="post"/>
+			<DbDetails><Where>where HotelName='%{TB_name}'</Where></DbDetails><submit next="TB_code" namelist="DbDetails" method="post"/>
+			</if></OnClick></Button>
+		<TAB/>
+		<Button Name="update" Size="30,20" Text="修改" >
+			<OnClick><assign name="break" expr="0"/><assign name="cityparam" expr=""/>
+			<if cond="%{citys[city_code]}"><if cond="%{innsLst[CityID]}!=%{citys[city_code]}"><confirm expr="要修改所在城市么?"/><if cond="%{update[confirmed]}"><assign name="cityparam" expr=",CityID=%{citys[city_code]},CityName='%{citys[city_name]}'"/></if></if></if>
+			<if cond="!%{break}"><DbDetails><queryFormat>Update creator.ctu_hotels set HotelName='%{TB_name}',phone='%{TB_phone}',mobile='%{TB_mobile}',Traffic='%{TB_traffic}',Service='%{TB_Service}',address='%{TB_addr}',Content='%{TB_Content}'%{cityparam},manager='%{TB_manager}',chain_name='%{chainBrand[chain_name_cn]}',chain_id=%{chainBrand[chain_id]}, opendate='%{OpenDT}',uptime=UNIX_TIMESTAMP(),actived=%{InService[SelectedIndex]},picture='%{TB_picinn}',album='%{TB_album}',BedPrice='%{TB_BedPrice}',Scenic='%{TB_Scenic}',delicacy='%{TB_delicacy}',Specialty='%{TB_Specialty}',pubphones='%{TB_pubphones}',Tags='%{TB_Tags}',boss='%{TB_boss}', qq='%{TB_qq}' where hotel_id=%{TB_code}</queryFormat></DbDetails><submit namelist="DbDetails" method="post"/>
+			</if></OnClick></Button>
+		<BR/>
+		<Button Name="search" Size="30,20" Text="查找">
+			<OnClick><DbDetails></DbDetails><submit next="innsLst" namelist="DbDetails" method="post"/></OnClick>
+			</Button>
+		<TAB/>
+		<Button Name="delcontact" Size="30,20" Text="删除" 
+			OnClick="sql:Update creator.ctu_hotels set activited=0 where hotel_id=%{TB_code}"></Button>
+		<BR/>
+		<Button Name="resetall" Size="50,20" Text="清空数据" 
+			OnClick="SetText(TB_code,);SetText(TB_name,);SetSel(CB_sex,0);SetText(TB_mobile,);SetText(TB_phone,);SetText(TB_email,);SetText(TB_addr,);SetText(TB_Post,);SetText(TB_remark,);SetText(TB_fax, );SetText(TB_website,);SetText(TB_title,);SetText(TB_company,);SetText(TB_TEL,);SetText(TB_depart,)">
+			</Button></Ctrls></GroupBox>
+		<BR autoHeight="1"/>
+		<Button Name="btn_content" Text="概况" enabled="0" Size="50,20">
+			<OnClick><submit next="enabledall" function="click"/>
+				<SetEnabled Name="btn_content" enabled="0"/>
+				<submit next="switchshow" function="click"/>
+				</OnClick></Button>
+		<Button Name="btn_traffic" Text="交通" Size="50,20">
+			<OnClick><submit next="enabledall" function="click"/>
+				<SetEnabled Name="btn_traffic" enabled="0"/>
+				<submit next="switchshow" function="click"/>
+				</OnClick></Button>
+		<Button Name="btn_boss" Text="掌柜" Size="50,20">
+			<OnClick><submit next="enabledall" function="click"/>
+				<SetEnabled Name="btn_boss" enabled="0"/>
+				<submit next="switchshow" function="click"/>
+				</OnClick></Button>
+		<Button Name="btn_Service" Text="其它服务" Size="50,20">
+			<OnClick><submit next="enabledall" function="click"/>
+				<SetEnabled Name="btn_Service" enabled="0"/>
+				<submit next="switchshow" function="click"/>
+				</OnClick></Button>
+		<Button Name="btn_BedPrice" Text="房型价格" Size="50,20">
+			<OnClick><submit next="enabledall" function="click"/>
+				<SetEnabled Name="btn_BedPrice" enabled="0"/>
+				<submit next="switchshow" function="click"/>
+				</OnClick></Button>
+		<Button Name="btn_Scenic" Text="周边景点" Size="50,20">
+			<OnClick><submit next="enabledall" function="click"/>
+				<SetEnabled Name="btn_Scenic" enabled="0"/>
+				<submit next="switchshow" function="click"/>
+				</OnClick></Button>
+		<Button Name="btn_delicacy" Text="周边美食" Size="50,20">
+			<OnClick><submit next="enabledall" function="click"/>
+				<SetEnabled Name="btn_delicacy" enabled="0"/>
+				<submit next="switchshow" function="click"/>
+				</OnClick></Button>
+		<Button Name="btn_Specialty" Text="特产" Size="50,20">
+			<OnClick><submit next="enabledall" function="click"/>
+				<SetEnabled Name="btn_Specialty" enabled="0"/>
+				<submit next="switchshow" function="click"/>
+				</OnClick></Button>
+		<Button Name="btn_pubphones" Text="服务电话" Size="50,20" ToolTop="公共服务电话">
+			<OnClick><submit next="enabledall" function="click"/>
+				<SetEnabled Name="btn_pubphones" enabled="0"/>
+				<submit next="switchshow" function="click"/>
+				</OnClick></Button>
+		<Button Name="btn_Tags" Text="标签" Size="50,20">
+			<OnClick><submit next="enabledall" function="click"/>
+				<SetEnabled Name="btn_Tags" enabled="0"/>
+				<submit next="switchshow" function="click"/>
+				</OnClick></Button>
+		<Button Name="btn_remark" Text="备注" Size="50,20">
+			<OnClick><submit next="enabledall" function="click"/>
+				<SetEnabled Name="btn_remark" enabled="0"/>
+				<submit next="switchshow" function="click"/>
+				</OnClick></Button>
+		<Button Name="enabledall" visible="0" Size="50,20" Text="使能选择按钮">
+			<OnClick>
+			<SetEnabled Name="btn_content" enabled="1"/>
+			<SetEnabled Name="btn_traffic" enabled="1"/>
+			<SetEnabled Name="btn_boss" enabled="1"/>
+			<SetEnabled Name="btn_Service" enabled="1"/>
+			<SetEnabled Name="btn_BedPrice" enabled="1"/>
+			<SetEnabled Name="btn_Scenic" enabled="1"/>
+			<SetEnabled Name="btn_delicacy" enabled="1"/>
+			<SetEnabled Name="btn_Specialty" enabled="1"/>
+			<SetEnabled Name="btn_pubphones" enabled="1"/>
+			<SetEnabled Name="btn_Tags" enabled="1"/>
+			<SetEnabled Name="btn_remark" enabled="1"/>
+			</OnClick></Button>
+		<Button Name="switchshow" visible="0" Size="50,20" Text="使能选择按钮">
+			<OnClick>
+			<SetVisible Name="TB_content" Visible="1-%{btn_content[enabled]}"/>
+			<SetVisible Name="TB_traffic" Visible="1-%{btn_traffic[enabled]}"/>
+			<SetVisible Name="TB_boss" Visible="1-%{btn_boss[enabled]}"/>
+			<SetVisible Name="TB_Service" Visible="1-%{btn_Service[enabled]}"/>
+			<SetVisible Name="TB_BedPrice" Visible="1-%{btn_BedPrice[enabled]}"/>
+			<SetVisible Name="TB_Scenic" Visible="1-%{btn_Scenic[enabled]}"/>
+			<SetVisible Name="TB_delicacy" Visible="1-%{btn_delicacy[enabled]}"/>
+			<SetVisible Name="TB_Specialty" Visible="1-%{btn_Specialty[enabled]}"/>
+			<SetVisible Name="TB_pubphones" Visible="1-%{btn_pubphones[enabled]}"/>
+			<SetVisible Name="TB_Tags" Visible="1-%{btn_Tags[enabled]}"/>
+			<SetVisible Name="TB_remark" Visible="1-%{btn_remark[enabled]}"/>
+			</OnClick></Button>
+		<!--BR AutoHeight="1"/><TextBox Name="TB_qq" ReadOnly="false" Size="160,20" Text="" ToolTip="qq"/>
+		<TextBox Name="TB_url" ReadOnly="true" Size="260,20" Text="" ToolTip="url"/-->
+			</Ctrls></GroupBox>
+		<BR autoHeight="1"/>
+		<GroupBox Name="GroupBox2" Text="门店列表" Size="50,200"><Ctrls>
+			<ListCtrl Name="innsLst" PageSize="50" Size="250,150"
+				Heading="店名,100;负责人,60;电话,80;手机,80;品牌,80;城市,60;地址,100;"
+				OnClick="SetText(TB_code,%{hotel_id});SetText(TB_name,%{HotelName});SetText(TB_phone,%{phone});SetText(TB_mobile,%{mobile});SetText(TB_traffic,%{Traffic});SetText(TB_Service,%{Service});SetText(TB_addr,%{Address});SetText(TB_Content,%{Content});SetText(TB_manager,%{manager});SetSel(chainBrand,%{chain_name});SetText(TB_remark,%{remark});SetSel(InService,%{actived});SetText(OpenDT,%{opendate});SetText(TB_picinn,%{picture});SetText(TB_album,%{album});SetText(TB_BedPrice,%{BedPrice});SetText(TB_Scenic,%{Scenic});SetText(TB_delicacy,%{delicacy});SetText(TB_Specialty, %{Specialty});SetText(TB_pubphones,%{pubphones});SetText(TB_Tags,%{Tags});SetText(TB_boss,%{boss});SetText(TB_qq,%{qq});SetText(TB_url,%{url})">
+				<DbDetails>
+					<DbTable>creator.ctu_hotels</DbTable>
+					<Index>hotel_id</Index>
+					<Data>HotelName, manager,phone, mobile, chain_name, CityName,Address,CityID,opendate,actived,FROM_UNIXTIME(uptime,'%Y-%m-%d') as uptime,Traffic, Content,Service,chain_id,concat(remark,contactinfo) as remark,hotel_id,picture,album,BedPrice,Scenic,delicacy, Specialty, pubphones, Tags, boss,qq,concat('烦请核实您的客栈资料, http://centyou.com/',url) as url</Data>
+					<Order>hotel_id</Order>
+					<Where>where actived</Where>
+					<queryFormat>select %{data} from %{dbtable} %{hotelonlys} order by %{order} limit %{StartRow},%{PgSize}</queryFormat> 
+				</DbDetails>
+			</ListCtrl>
+			<BR AutoHeight="1"/>
+			<Button Name="FirstPage" Size="80,20" Text="首页" OnClick="(innsLst)GetPage(First)"></Button>
+			<Button Name="PrePage" Size="80,20" Text="上一页" OnClick="(innsLst)GetPage(Pre)"></Button>
+			<Button Name="NextPage" Size="80,20" Text="下一页" OnClick="(innsLst)GetPage(Next)"></Button>
+			</Ctrls></GroupBox>
+
+		<GroupBox Name="GroupBox3" Text="店评历史记录" Size="480,200"><Ctrls>
+			<ListCtrl Name="HistoryList" PageSize="10" Size="470,180"
+				Heading="客人姓名,100;房间号,100;点评,100">
+				<DbDetails>
+					<DbTable>creator.ctu_inns_reviewer_reviewer as v inner join creator.ctu_reservation as s on v.reviewer_reviewer_resvid=s.reservation_id</DbTable>
+					<Index></Index>
+					<Data>s.custName,s.roomNo,v.reviewer_reviewer_review,v.reviewer_reviewer_id</Data>
+					<Order>v.reviewer_reviewer_id desc</Order>
+					<Where>where v.reviewer_reviewer_itemid=%{TB_code}</Where>
+					<queryFormat>select %{data} from %{dbtable} %{where} order by %{order} </queryFormat> 
+				</DbDetails>
+			</ListCtrl></Ctrls></GroupBox>
+
+		</Ctrls>      
+	<OnActivate>
+		<if cond="%{purview}!=127">
+			<!--SetVisible name="insert" Visible="0"/-->
+			<SetVisible name="search_m" Visible="0"/>
+			<SetVisible name="search_n" Visible="0"/>
+			<SetVisible name="update" Visible="0"/>
+			<SetVisible name="delcontact" Visible="0"/>
+			<SetVisible name="resetall" Visible="0"/>
+			<assign name="hotelonlys" expr="where (manager_id = '%{user_code}' or hotel_id='%{hotel_id}')"/></if>
+		<if cond="%{user_id_catch}!=%{user_code}"><assign name="user_id_catch" expr="%{user_code}"/>
+		<DbDetails/><submit namelist="DbDetails" next="innsLst"/></if>
+		</OnActivate>
+</WndTap>

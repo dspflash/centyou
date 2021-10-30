@@ -1,0 +1,41 @@
+<WndTap Text="CityPick" Name="CityPick" Ver="2" popup="1">
+<Ctrls>
+<GroupBox Text="ctu_city" Name="GBctu_city" id="ctu_city" Size="100,100"><Ctrls>
+<GroupBox Name="GBDEDITctu_city"><Ctrls>
+<GroupBox Name="GB_city" Multiline="0" cols="xs12 sm6 md4"><Ctrls>
+	<ComboBox Name="provinces" Size="230,200" Weight="230" Type="3" OnLoad="init" SelectedIndex="-1">
+		<DbDetails>
+		<queryFormat>select province_name,province_code from creator.ctu_province</queryFormat> 
+		</DbDetails>
+		<OnSELENDOK><if cond="%{provinces[province_code]}">
+			<DbDetails>
+			<queryFormat>select city_name,city_code from creator.ctu_city where city_province_code=%{provinces[province_code]} and city_area_code=0</queryFormat> 
+			</DbDetails>
+			<submit next="areas" namelist="DbDetails" method="post"/>
+			<else/><submit next="areas" function="resetcontent"/>
+			</if></OnSELENDOK>
+	</ComboBox>
+</Ctrls></GroupBox>
+<BR AutoHeight="1"/><GroupBox Name="GB_city" Multiline="0" cols="xs12 sm6 md4"><Ctrls>
+	<ComboBox Name="areas" Size="230,200" Weight="230" Type="3" SelectedIndex="-1">
+		<OnSELENDOK><if cond="%{areas[city_code]}">
+			<DbDetails>
+			<queryFormat>select city_name,city_code from creator.ctu_city where city_area_code=%{areas[city_code]}</queryFormat> 
+			</DbDetails>
+			<submit next="citys" namelist="DbDetails" method="post"/>
+			<else/><submit next="citys" function="resetcontent"/>
+			</if></OnSELENDOK>
+	</ComboBox>
+</Ctrls></GroupBox>
+<BR AutoHeight="1"/><GroupBox Name="GB_city" Multiline="0" cols="xs12 sm6 md4"><Ctrls>
+	<ComboBox Name="citys" Type="3" Size="230,300" Weight="230" SelectedIndex="-1">
+		<OnSELENDOK>
+			<if cond="%{citys}"><assign name="TB_addr" expr="%{provinces}%{citys}"/><DbDetails><Where>city_code='%{citys[city_code]}'</Where></DbDetails><submit namelist="DbDetails" next="$parent.%{frmwndctrl}"/><assign name="$parent.%{frmwndctrl}[selectedindex]" function="SetSel" expr="0"/><submit function="onok"/></if>
+				</OnSELENDOK></ComboBox>
+</Ctrls></GroupBox>
+	</Ctrls></GroupBox>
+	</Ctrls></GroupBox>
+	</Ctrls>
+	<OnChanged/>
+	<OnActivate/>
+	</WndTap>

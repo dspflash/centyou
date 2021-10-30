@@ -1,0 +1,18 @@
+﻿<GroupBox cols="xs12 sm6 md4" Multiline="0" Name="GBPGctu_hotels"><Ctrls>
+<Label Align="Right" Text="Records" Name="lb_Records" Size="60,20"/>
+<TextBox Weight="30" ToolTip="ttp_records" Name="records_ctu_hotels" Size="40,20" OnLoad="init" readonly="1">
+	<DbDetails fcsm="1">
+<Index>hotel_id</Index>
+<DbTable>creator.ctu_hotels c left join creator.ctu_city c0 on c.cityname=c0.city_code left join creator.ctu_user c1 on c.manager_id=c1.user_id left join creator.ctu_chainbrand c2 on c.chain_id=c2.chain_id</DbTable>
+<Data>count(*) records</Data>
+<Order>hotel_id</Order><Queryformat>select %{data} from (select c.hotel_id from %{dbtable} where %{hotelonlys} %{where} GROUP BY c.hotel_id  ORDER BY c.hotel_id) t</Queryformat></DbDetails>
+<OnEnchange>
+<assign name="pgs_ctu_hotels" expr="js(Math.ceil(%{records_ctu_hotels}/%{ctu_hotels_vLst[countsperpage]}))"/>
+<assign name="pgscb_ctu_hotels" expr="js('1~'+Math.ceil(%{records_ctu_hotels}/%{ctu_hotels_vLst[countsperpage]}))" function="setitems"/>
+</OnEnchange>
+</TextBox>
+<!--ComboBox Weight="60" ToolTip="ttp_pgs" Name="pgscb_ctu_hotels" Size="60,20"><OnSelEndOK><submit next="ctu_hotels_vLst" function="GetPage(%{pgscb_ctu_hotels}-1)"/></OnSelEndOK></ComboBox-->
+<TextBox Weight="30" ToolTip="ttp_pgs" Name="pgs_ctu_hotels" Size="30,20" readonly="1"/>
+<TextBox Weight="30" ToolTip="ttp_pgcur" Name="pgcur_ctu_hotels" Size="30,20"/>
+<Button Text="go2Page" Name="go2pagectu_hotels_vLst" Size="50,20"><OnClick><submit next="ctu_hotels_vLst" function="GetPage(%{pgcur_ctu_hotels}-1)"/></OnClick></Button>
+</Ctrls></GroupBox>

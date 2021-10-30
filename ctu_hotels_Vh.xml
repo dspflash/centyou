@@ -1,0 +1,12 @@
+﻿<GroupBox Name="GBDVctu_hotels" cols="xs12 sm12 md12 lg12" visible="0"><Ctrls>
+<ListCtrl Name="ctu_hotelsLst" ToolTip="ttp_ctu_hotels" Size="70,20" visible="0" loadedclick="1">
+	<DbDetails fcsm="1">
+<Index>hotel_id</Index>
+<DbTable>creator.ctu_hotels</DbTable>
+<Data>hotelname,mobile,phone,cityname,cityid,address,email,opendate,url,qq,star,manager_id,manager,chain_name,chain_id,picture,album,mappoint,min_price,max_price,uptime,tags,actived,traffic,pubphones,contactinfo,content,delicacy,service,boss,canyin,roomdetails,decoration,nearbyhotels,nearbypoints,scenic,bedprice,specialty,remark,hotel_id</Data>
+<Order>hotel_id</Order></DbDetails>
+<OnClick><assign name="cityname[city_code]" expr="%{ctu_hotelsLst[cityname]}" function="SetSel"/><assign name="manager_id[user_id]" expr="%{ctu_hotelsLst[manager_id]}" function="SetSel"/><assign name="chain_id[chain_id]" expr="%{ctu_hotelsLst[chain_id]}" function="SetSel"/>
+<if cond="'%{hotel_id}'"><SetVisible name="insertctu_hotels" Visible="0"/><SetVisible name="modifyctu_hotels" Visible="1"/></if>
+</OnClick>
+</ListCtrl>
+</Ctrls></GroupBox>

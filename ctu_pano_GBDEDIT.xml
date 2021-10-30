@@ -1,0 +1,78 @@
+﻿<GroupBox Name="GBDEDITctu_pano"><Ctrls>
+<GroupBox cols="xs12 sm6 md4" Multiline="0" Name="GB_path"><Ctrls>
+<Label Align="Right" Text="path" onload="init" Name="lb_path" Size="60,20"/>
+<ComboBox Weight="170" Text="" ToolTip="ttp_path" onload="init" Name="path" Size="170,100">
+	<DbDetails>
+<Index/>
+<DbTable/>
+<Data/>
+<Where/>
+<queryFormat>select * from . </queryFormat></DbDetails><DbDetails fcsm="1"><DbDatabase>D:\AppServ\www\cha\vr\pano</DbDatabase> <datatype>dir</datatype> </DbDetails><OnSelEndOk><submit next="img"/><submit next="pano"/></OnSelEndOk></ComboBox>
+</Ctrls></GroupBox>
+<GroupBox cols="xs12 sm6 md4" Multiline="0" Name="GB_img"><Ctrls>
+<Label Align="Right" Text="img" onload="init" Name="lb_img" Size="60,20"/>
+<ComboBox Weight="170" Text="" ToolTip="ttp_img" onload="init" Name="img" Size="170,100">
+	<DbDetails>
+<Index/>
+<DbTable/>
+<Data/>
+<Where/>
+<queryFormat>select * from . where filetype=png</queryFormat></DbDetails><DbDetails fcsm="1"><DbDatabase>D:\AppServ\www\cha\vr\pano\%{path}</DbDatabase> <datatype>dir</datatype> </DbDetails></ComboBox>
+</Ctrls></GroupBox>
+<GroupBox cols="xs12 sm6 md4" Multiline="0" Name="GB_pano"><Ctrls>
+<Label Align="Right" Text="pano" onload="init" Name="lb_pano" Size="60,20"/>
+<ComboBox Weight="170" Text="" ToolTip="ttp_pano" onload="init" Name="pano" Size="170,100">
+	<DbDetails>
+<Index/>
+<DbTable/>
+<Data/>
+<Where/>
+<queryFormat>select * from . where filetype=jpg</queryFormat></DbDetails><DbDetails fcsm="1"><DbDatabase>D:\AppServ\www\cha\vr\pano\%{path}</DbDatabase> <datatype>dir</datatype> </DbDetails></ComboBox>
+</Ctrls></GroupBox>
+<BR AutoHeight="1"/><GroupBox cols="xs12 sm6 md4" Multiline="0" Name="GB_info"><Ctrls>
+<Label Align="Right" Text="info" Name="lb_info" Size="60,20"/>
+<TextBox Weight="170" Text="" ToolTip="ttp_info" Name="info" Size="170,20"/>
+</Ctrls></GroupBox>
+<GroupBox cols="xs12 sm6 md4" Multiline="0" Name="GB_lats"><Ctrls>
+<Label Align="Right" Text="lats" Name="lb_lats" Size="60,20"/>
+<TextBox Weight="170" Text="" ToolTip="ttp_lats" Name="lats" Size="170,20"/>
+</Ctrls></GroupBox>
+<GroupBox cols="xs12 sm6 md4" Multiline="0" Name="GB_latn"><Ctrls>
+<Label Align="Right" Text="latn" Name="lb_latn" Size="60,20"/>
+<TextBox Weight="170" Text="" ToolTip="ttp_latn" Name="latn" Size="170,20"/>
+</Ctrls></GroupBox>
+<BR AutoHeight="1"/><GroupBox cols="xs12 sm6 md4" Multiline="0" Name="GB_reftbl"><Ctrls>
+<Label Align="Right" Text="reftbl" Name="lb_reftbl" Size="60,20"/>
+<ComboBox Weight="170" Text="" ToolTip="ttp_reftbl" Items="hotels|rooms|roomtype" Name="reftbl" Size="170,100"><OnSelEndOk><submit next="refkey"/></OnSelEndOk></ComboBox>
+</Ctrls></GroupBox>
+<GroupBox cols="xs12 sm6 md4" Multiline="0" Name="GB_refkey"><Ctrls>
+<Label Align="Right" Text="refkey" Name="lb_refkey" Size="60,20"/>
+<ComboBox Weight="170" Text="" ToolTip="ttp_refkey" Name="refkey" Size="170,100">
+	<DbDetails>
+<Index/>
+<DbTable/>
+<Data/>
+<Where/>
+<queryFormat>show full fields from creator.ctu_%{reftbl}</queryFormat></DbDetails></ComboBox>
+</Ctrls></GroupBox>
+<GroupBox cols="xs12 sm6 md4" Multiline="0" Name="GB_refid"><Ctrls>
+<Label Align="Right" Text="refid" Name="lb_refid" Size="60,20"/>
+<TextBox Weight="170" Text="" ToolTip="ttp_refid" Name="refid" Size="170,20"/>
+</Ctrls></GroupBox>
+<GroupBox cols="xs12 sm6 md4" Multiline="0" overlap="pre" Name="GB_pano_id" Visible="false"><Ctrls>
+<Label Align="Right" Text="pano_id" overlap="pre" Name="lb_pano_id" readonly="true" Size="60,20" Visible="false"/>
+<TextBox Weight="170" Text="" ToolTip="ttp_pano_id" overlap="pre" Name="pano_id" readonly="true" Size="170,20" Visible="false"><OnEnChange><if cond="'%{pano_id}'"><SetVisible name="insertctu_pano" Visible="0"/><SetVisible name="modifyctu_pano" Visible="1"/><else/><SetVisible name="insertctu_pano" Visible="1"/><SetVisible name="modifyctu_pano" Visible="0"/></if></OnEnChange></TextBox>
+</Ctrls></GroupBox>
+<GroupBox cols="xs12 sm6 md4" Multiline="0" overlap="pre" Name="GB_shortid" Visible="false"><Ctrls>
+<Label Align="Right" Text="shortid" overlap="pre" Name="lb_shortid" readonly="true" Size="60,20" Visible="false"/>
+<TextBox Weight="170" Text="" ToolTip="ttp_shortid" overlap="pre" Name="shortid" readonly="true" Size="170,20" Visible="false"/>
+</Ctrls></GroupBox>
+<GroupBox cols="xs12 sm6 md4" Multiline="0" overlap="pre" Name="GB_visited" Visible="false"><Ctrls>
+<Label Align="Right" Text="visited" overlap="pre" Name="lb_visited" readonly="true" Size="60,20" Visible="false"/>
+<TextBox Weight="170" Text="" ToolTip="ttp_visited" overlap="pre" Name="visited" readonly="true" Size="170,20" Visible="false"/>
+</Ctrls></GroupBox>
+<GroupBox cols="xs12 sm6 md4" Multiline="0" overlap="pre" Name="GB_lastvisitdt" Visible="false"><Ctrls>
+<Label Align="Right" Text="lastvisitdt" overlap="pre" Name="lb_lastvisitdt" readonly="true" Size="60,20" Visible="false"/>
+<DateTime Weight="170" Text="" ToolTip="ttp_lastvisitdt" overlap="pre" Name="lastvisitdt" readonly="true" Size="170,20" Visible="false" Format="yyyy-MM-dd HH:mm:ss"/>
+</Ctrls></GroupBox>
+</Ctrls></GroupBox>

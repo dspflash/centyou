@@ -1,0 +1,37 @@
+﻿<GroupBox cols="xs12 sm6 md4" Name="GBOPEctu_hotels" Size="100,100"><Ctrls>
+<Button sqlpkinsert="hotel_id" Text="create" ToolTip="ttp_createctu_hotels" Name="insertctu_hotels" Size="50,20">
+<OnClick>
+<DbDetails mode="insert" fcsm="1">
+<DbTable>creator.ctu_hotels</DbTable>
+<Required>%{dataRequired}</Required>
+<Requireless>%{dataRequireless}</Requireless>
+<Data>hotelname,mobile,phone,cityname[city_code],cityid,address,email,opendate,url,qq,star,manager,chain_name,chain_id[chain_id],picture,album,mappoint,tags,actived,traffic,pubphones,contactinfo,content,delicacy,service,boss,canyin,roomdetails,decoration,nearbyhotels,nearbypoints,scenic,bedprice,specialty,remark</Data>
+<DataEx>manager_id,uptime;'%{manager_id[user_name]}',UNIX_TIMESTAMP()</DataEx>
+<queryFormat>insert into %{table} %{data}</queryFormat></DbDetails>
+<submit namelist="DbDetails"/><if cond="!%{insertctu_hotels[broke]}"><if cond="%{refreshAfterEdit}==1"><submit next="ctu_hotelsLst" delay="1000"/><elseif cond="%{refreshAfterEdit}==2"/><if cond="1"><if cond="'%{frmwndctrl}'"><submit next="%{frmwndctrl}" delay="1000"/><else/><submit next="$parent.ctu_hotels_vLst" delay="1000"/></if></if></if></if>
+	</OnClick>
+	</Button><TAB/>
+<Button Text="modify" ToolTip="ttp_modifyctu_hotels" Name="modifyctu_hotels" Size="50,20">
+<OnClick>
+<DbDetails mode="update" fcsm="1">
+<DbTable>creator.ctu_hotels</DbTable>
+<Required>%{dataRequired}</Required>
+<Requireless>%{dataRequireless}</Requireless>
+<Data>hotelname,mobile,phone,cityname[city_code],cityid,address,email,opendate,url,qq,star,manager,chain_name,chain_id[chain_id],picture,album,mappoint,tags,actived,traffic,pubphones,contactinfo,content,delicacy,service,boss,canyin,roomdetails,decoration,nearbyhotels,nearbypoints,scenic,bedprice,specialty,remark</Data>
+<DataEx>manager_id,uptime;'%{manager_id[user_name]}',UNIX_TIMESTAMP()</DataEx>
+<Where>hotel_id='%{hotel_id}'</Where>
+<queryFormat>update %{table} set %{data} where %{where}</queryFormat></DbDetails>
+<submit namelist="DbDetails"/><if cond="!%{modifyctu_hotels[broke]}"><if cond="%{refreshAfterEdit}==1"><submit next="ctu_hotelsLst" delay="1000"/><elseif cond="%{refreshAfterEdit}==2"/><if cond="'%{frmwndctrl}'"><submit next="%{frmwndctrl}" delay="1000"/><else/><submit next="$parent.ctu_hotels_vLst" delay="1000"/></if></if></if>
+	</OnClick>
+</Button><TAB/>
+<Button Text="reset" ToolTip="ttp_resetctu_hotels" Name="resetctu_hotels" Size="50,20">
+<OnClick>
+<submit next="GBDEDITctu_hotels" function="reset"/>
+	</OnClick>
+</Button><TAB/>
+<Button Text="Search" ToolTip="ttp_gsearchctu_hotels" Name="gsearchctu_hotels" Size="50,20" visible="false">
+<OnClick>
+<search next="ctu_hotelsLst" listed="0" prefixwhere="0" prefixand="0" inputed="1"/><submit next="GBDEDITctu_hotels" namelist="search" function="search"/>
+	</OnClick>
+</Button><TAB/>
+</Ctrls></GroupBox>

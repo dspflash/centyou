@@ -1,0 +1,106 @@
+﻿<WndTap Name="roomstatus" Text="房型状态">
+	<var name="hotelid" expr="0"/>
+	<var name="rmtpChg" expr="0"/>
+	<Ctrls>
+		<GroupBox Name="GroupBox1" Visible="true" Enabled="true" Text="客房可售状态"><Ctrls>
+		<DateTime Name="DtStart" Visible="true" Enabled="true" Format="yyyy-MM-dd" Size="100,20"/>
+		<DateTime Name="DtEnd" Visible="true" Enabled="true" Format="yyyy-MM-dd" Size="100,20"/>
+		<TAB/>
+		<ComboBox Name="CB_roomTpye" Visible="true" Enabled="true" Size="100,100" Type="3" OnLoad="init" SelectedIndex="0">
+			<DbDetails>
+				<queryFormat>select roomtype,roomtypeid,num from creator.ctu_roomtype where hotel_id=%{hotelid}</queryFormat> 
+				</DbDetails>
+			<OnSELENDOK>
+				<assign name="TB_num_rmtp" expr="%{CB_roomTpye[num]}" function="SetText"/>
+				</OnSELENDOK></ComboBox>
+		<Label Name="lb_num" Visible="true" Enabled="true" Size="50,20" Text="房间总数"/>
+		<TextBox Name="TB_num_rmtp" Visible="true" Enabled="false" ReadOnly="false" Size="50,20" Text=""/>
+		<Button Name="openResv" Visible="true" Enabled="true" Size="50,20" Text="开通预定" Tooltip="选择开通预定的入住起始日期、退房结束日期，房型，然后点击“开通预定”即可">
+			<OnClick><DbDetails><queryFormat>select openReserv(UNIX_TIMESTAMP('%{DtStart}'),UNIX_TIMESTAMP('%{DtEnd}'),%{hostels.TB_code},%{CB_roomTpye[roomtypeid]},'%{CB_roomTpye[roomtype]}',%{CB_roomTpye[num]},%{user_id})</queryFormat></DbDetails>
+				<submit next="openResv" namelist="DbDetails" method="post"/>
+				<submit next="search" method="post" function="click"/></OnClick>
+			</Button>
+		<TAB/><TAB/><TAB/><Button Name="search" Visible="true" Enabled="true" Size="30,20" Text="刷新">
+			<OnClick><DbDetails/>
+			<submit next="rmtplst" namelist="DbDetails" method="post"/>
+			<submit namelist="DbDetails" next="rmPrDtl"/>
+			<submit namelist="DbDetails" next="rmPrDtlToday"/>
+			<submit namelist="DbDetails" next="rmStDtl"/>
+			</OnClick>
+			</Button>
+	     <Button Name="export" Size="30,20" Text="导出">
+		<OnClick>	<Save></Save><submit next="rmPrDtl" namelist="Save" method="post" function="savetofile"/></OnClick></Button>
+		<BR/>
+		<ListCtrl Name="rmtplst" Visible="true" Enabled="true" Size="720,90" DataJoin="%{this}%{rmTpSt}" autosizecol="1">
+			<MDX id="rmTpSt" remark="房间预定状态">
+			<DbDetails>
+				<DbTable>creator.ctu_roomrates</DbTable>
+				<Index>o_id</Index>
+				<MDX>序号,日期,cnts</MDX>
+				<Data>roomtp_id as 序号,FROM_UNIXTIME(dt,'%Y-%m-%d') as 日期,(numTotal-numBooking-numReserved) as cnts</Data>
+				<Order>s_order.o_id desc</Order>
+				<Where>hotel_id=%{hotelid} and dt &gt;= UNIX_TIMESTAMP('%{DtStart}') and dt &lt; UNIX_TIMESTAMP('%{DtEnd}')</Where>
+				<queryFormat>select %{data} from %{dbtable} where %{where}</queryFormat> 
+			</DbDetails>
+			</MDX>			
+			<DbDetails>
+				<DbTable>creator.ctu_roomtype</DbTable>
+				<Data>roomtypeid as 序号, roomtype as 房型</Data>
+				<Order>order by roomtypeid</Order>
+				<Where>where hotel_id=%{hotelid}</Where>
+				<queryFormat>select %{data} from %{dbtable} %{where} %{order}</queryFormat> 
+			</DbDetails>
+		</ListCtrl>
+		</Ctrls></GroupBox>
+
+		<BR autoheight="1"/>
+		<GroupBox Name="GroupBox2" Visible="true" Enabled="true" Text="客房价格表"><Ctrls>
+		<ListCtrl Name="rmPrDtl" Visible="true" Enabled="true" Size="720,90" Remark="Price Detail list" autosizecol="1">
+			<DbDetails>
+				<Data>
+				  <Data Dynamic="true">sql:select FROM_UNIXTIME(dt,'%Y-%m-%d') as dt from creator.ctu_roomrates where hotel_id=%{hotelid} and dt &gt;= UNIX_TIMESTAMP('%{DtStart}') and dt &lt; UNIX_TIMESTAMP('%{DtEnd}') group by dt;</Data> 
+				  <DataFormat>max(getRoomPrice(roomtp_id,'%{dt}')) as '%{dt}'</DataFormat> 
+				  </Data>
+				<DbTable>creator.ctu_roomrates</DbTable>
+				<Order></Order>
+				<Where>where hotel_id=%{hotelid} and dt &gt;= UNIX_TIMESTAMP('%{DtStart}') and dt &lt; UNIX_TIMESTAMP('%{DtEnd}')</Where>
+				<queryFormat>select distinct(roomtp_id) as 序号,max(roomtp_name) as 房型,%{data} from %{dbtable} %{where} group by roomtp_id</queryFormat> 
+			</DbDetails>
+		</ListCtrl></Ctrls></GroupBox>
+
+		<BR autoheight="1"/>
+		<GroupBox Name="GroupBox3" Visible="true" Enabled="true" Text="今日房价"><Ctrls>
+		<ListCtrl Name="rmPrDtlToday" Visible="true" Enabled="true" Size="720,90" Remark="Price Detail list"
+			Heading="房型,20;门市价,80;E网络会员价,80;普卡会员价,80;金卡会员价,80;铂金会员价,80;">
+			<DbDetails>
+				<Data>x.name,x.pr,CEIL(x.pr*0.95),CEIL(x.pr*0.92),CEIL(x.pr*0.88),CEIL(x.pr*0.85)</Data>
+				<DbTable>(select distinct(roomtp_id) as id,max(roomtp_name) as name,MAX(getRoomPrice(roomtp_id,CURDATE())) as pr from creator.ctu_roomrates where hotel_id=%{hotelid} group by id) as x</DbTable>
+				<Order></Order>
+				<Where>where hotel_id=%{hotelid} and dt &gt;= UNIX_TIMESTAMP('%{DtStart}') and dt &lt; UNIX_TIMESTAMP('%{DtEnd}')</Where>
+				<queryFormat>select %{data} from %{dbtable}</queryFormat> 
+			</DbDetails>
+		</ListCtrl></Ctrls></GroupBox>
+		
+		<BR autoheight="1"/>
+		<GroupBox Name="GroupBox4" Visible="true" Enabled="true" Text="客房预定状态明细"><Ctrls>
+		<ListCtrl Name="rmStDtl" Visible="true" Enabled="true" Size="720,160" Remark="Status Detail list"
+			Heading="序号,20;房型编号,20;房型,50;日期,80;总数,20;预订数,20;保留数,20;取消数,20;负责人,50">
+			<DbDetails>
+				<DbTable>creator.ctu_roomrates</DbTable>
+				<Data>rate_id, roomtp_id, roomtp_name, FROM_UNIXTIME(dt,'%Y-%m-%d') as dt, numTotal, numBooking, numReserved, numCanceled, executives</Data>
+				<Order>order by dt,roomtp_id</Order>
+				<Where>where hotel_id=%{hotelid} and dt &gt;= UNIX_TIMESTAMP('%{DtStart}') and dt &lt; UNIX_TIMESTAMP('%{DtEnd}')</Where>
+				<queryFormat>select %{data} from %{dbtable} %{where} %{order}</queryFormat> 
+			</DbDetails>
+		</ListCtrl></Ctrls></GroupBox>
+	</Ctrls>
+	<OnActivate>
+		<assign name="DtEnd" expr="1 weeks"/>
+		<if cond="'%{session.hotel_id}'&&(%{hotelid}!=%{session.hotel_id})">
+			<assign name="hotelid" expr="%{session.hotel_id}"/>
+			<DbDetails/><submit namelist="DbDetails" next="CB_roomTpye"/></if>
+		<if cond="%{rmtpChg}!=%{roomtype.ChangeId}">
+			<assign name="rmtpChg" expr="%{roomtype.ChangeId}"/>
+			<DbDetails/><submit namelist="DbDetails" next="CB_roomTpye"/></if>
+		<submit next="search" method="post" function="click"/></OnActivate>
+</WndTap>

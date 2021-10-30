@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<XI3uWnd>
+	<DbDetails>
+		<SubDriver>MySQL</SubDriver>
+		<Host>localhost</Host>
+		<database>creator</database>
+		<characterset>utf8</characterset>
+		<sqlMode>NO_BACKSLASH_ESCAPES</sqlMode>
+		<User>i3u</User>
+		<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" xpointer="pass" href="config/db.xml"/>
+		<config>select user_password as Password,if(biz_layout is null,'layout/ucin/index.xml',biz_layout) as Layout,purview,hotel_id,u.user_id as user_code from ctu_hotels h join ctu_user as u on h.manager_id=u.user_id join ctu_bizrole as r on r.role_id=3 where user_name='%{UserName}' union select user_password as Password,if(biz_layout is null,'layout/ucin/index.xml',biz_layout) as Layout,purview,hotel_id,u.user_id as user_code from ctu_user as u left outer join ctu_biz as b on b.user_id=u.user_id left outer join ctu_bizrole as r on b.role_id=r.role_id where user_name='%{UserName}'
+</config>
+		</DbDetails>
+</XI3uWnd>

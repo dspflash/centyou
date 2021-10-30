@@ -1,0 +1,49 @@
+﻿<WndTap Name="roomsoccupancy" Text="客房状态">
+	<var name="hotelid" expr="0"/>
+	<var name="rmtpChg" expr="0"/>
+	<Ctrls>
+		<GroupBox Name="GroupBox1" Visible="true" Enabled="true" Text="客房占用状态" Size="750,550"><Ctrls>
+		<DateTime Name="DtStart" Visible="true" Enabled="true" Format="yyyy-MM-dd" Size="100,20"/>
+		<DateTime Name="DtEnd" Visible="true" Enabled="true" Format="yyyy-MM-dd" Size="100,20"/>
+		<TAB/>
+		<Button Name="search" Visible="true" Enabled="true" Size="30,20" Text="刷新">
+			<OnClick><DbDetails/>
+			<submit namelist="DbDetails" next="rmStDtl"/>
+			</OnClick>
+			</Button>
+		<TAB/>
+		<ComboBox Name="CB_roomTpye" Visible="true" Enabled="true" Size="100,100" Type="3" OnLoad="init" SelectedIndex="0">
+			<DbDetails>
+				<queryFormat>select roomtype,roomtypeid,num from creator.ctu_roomtype where hotel_id=%{hotelid}</queryFormat> 
+				</DbDetails>
+			<OnSELENDOK>
+				<assign name="TB_num_rmtp" expr="%{CB_roomTpye[num]}" function="SetText"/>
+				</OnSELENDOK></ComboBox>
+		<Label Name="lb_num" Visible="true" Enabled="true" Size="50,20" Text="房间总数"/>
+		<TextBox Name="TB_num_rmtp" Visible="true" Enabled="false" ReadOnly="false" Size="50,20" Text=""/>
+
+		<BR/>
+		<ListCtrl Name="rmStDtl" Visible="true" Enabled="true" Size="720,500" Remark="Price Detail list">
+			<DbDetails>
+				<Data>
+				  <Data Dynamic="true">sql:select FROM_UNIXTIME(dt,'%Y-%m-%d') as dt from creator.ctu_roomrates where hotel_id=%{hotelid} and dt between UNIX_TIMESTAMP('%{DtStart}') and UNIX_TIMESTAMP('%{DtEnd}') group by dt;</Data> 
+				  <DataFormat>max(getRoomStatus(roomid,UNIX_TIMESTAMP('%{dt}'))) as '%{dt}'</DataFormat> 
+				  </Data>
+				<DbTable>creator.ctu_rooms</DbTable>
+				<Order></Order>
+				<Where>where hotel_id=%{hotelid}</Where>
+				<queryFormat>select distinct(roomid) as 序号,max(roomno) as 房号,roomname as 房型, %{data} from %{dbtable} %{where} group by roomid</queryFormat> 
+			</DbDetails>
+		</ListCtrl>
+		</Ctrls></GroupBox>
+	</Ctrls>
+	<OnActivate>
+		<assign name="DtEnd" expr="1 weeks"/>
+		<if cond="'%{session.hotel_id}'&&(%{hotelid}!=%{session.hotel_id})">
+			<assign name="hotelid" expr="%{session.hotel_id}"/>
+			<DbDetails/><submit namelist="DbDetails" next="CB_roomTpye"/></if>
+		<if cond="%{rmtpChg}!=%{roomtype.ChangeId}">
+			<assign name="rmtpChg" expr="%{roomtype.ChangeId}"/>
+			<DbDetails/><submit namelist="DbDetails" next="CB_roomTpye"/></if>
+		<submit next="search" method="post" function="click"/></OnActivate>
+</WndTap>

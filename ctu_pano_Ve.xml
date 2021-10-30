@@ -1,0 +1,13 @@
+﻿<WndTap Name="ctu_pano" Text="ctu_pano" Ver="2">
+<var name="refreshAfterEdit" expr="2"/>
+<var name="dataRequired" expr=""/>
+<var name="dataRequireless" expr=""/>
+<xi:include href="lan\ctu_pano.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+<Ctrls>
+<GroupBox  Name="GBctu_pano" id="ctu_pano" Text="ctu_pano" Size="100,100"><Ctrls>
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="ctu_pano_GBDEDIT.xml"/>
+<BR AutoHeight="1"/><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="ctu_pano_GBOPE.xml"/>
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="ctu_pano_Vh.xml"/></Ctrls></GroupBox></Ctrls>
+	<OnChanged></OnChanged>
+	<OnActivate><SetVisible name="insertctu_pano" Visible="1"/><SetVisible name="modifyctu_pano" Visible="0"/></OnActivate>
+</WndTap>

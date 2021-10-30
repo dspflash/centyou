@@ -1,0 +1,21 @@
+<GroupBox Name="GBDVctu_pano" cols="xs12 sm12 md12 lg12"><Ctrls>
+<ListCtrl Name="ctu_pano_vLst" ToolTip="ttp_ctu_pano" Size="700,450" OnLoad="init" pagesize="50" Heading="path,120;img,120;pano,120;info,640;lats,20;latn,20;reftbl,120;refkey,120;refid,55;pano_id,55;shortid,50;visited,55;lastvisitdt,150;" loadedclick="0">
+	<DbDetails >
+<DbTable>creator.ctu_pano c</DbTable>
+<Index>pano_id</Index>
+<Data>c.path,c.img,c.pano,c.info,c.lats,c.latn,c.reftbl,c.refkey,c.refid,c.pano_id,c.shortid,c.visited,c.lastvisitdt</Data>
+<Order>pano_id</Order>
+<queryFormat>select %{data} from %{dbtable} %{where} order by %{Order} desc limit %{StartRow},%{PgSize}</queryFormat></DbDetails>
+<operator refresh="1" firstpage="1" prepage="1" nextpage="1">
+<op text="modify"><DbDetails><Where>pano_id='%{ctu_pano_vLst[pano_id]}'</Where></DbDetails><submit namelist="DbDetails" next="$this.ctu_pano.ctu_panoLst"/><assign name="$this.ctu_pano.frmwndctrl" expr="%{this}"/></op>
+<op text="delete" needconfirm="1"><DbDetails>
+<DbTable>creator.ctu_pano</DbTable>
+<Where>pano_id='%{ctu_pano_vLst[pano_id]}'</Where>
+<queryFormat>delete from %{table} where %{where}</queryFormat></DbDetails>
+<submit namelist="DbDetails"/><submit/></op>
+</operator>
+<OnChanged>
+<assign name="pgcur_ctu_pano" expr="js(%{ctu_pano_vLst[currentpage]}+1)"/>
+<assign name="pgscb_ctu_pano" expr="js(%{ctu_pano_vLst[currentpage]}+1)" function="SetSel"/>
+</OnChanged></ListCtrl>
+</Ctrls></GroupBox>

@@ -1,0 +1,21 @@
+﻿<GroupBox Name="GBDVctu_hotels" cols="xs12 sm12 md12 lg12"><Ctrls>
+<ListCtrl Name="ctu_hotels_vLst" ToolTip="ttp_ctu_hotels_v" Size="700,450" OnLoad="init" Heading="hotelname,640;mobile,500;phone,500;cityname,100;cityid,50;address,500;email,500;opendate,150;url,100;qq,100;star,30;manager_id,120;manager,175;chain_name,250;chain_id,120;picture,55;album,55;mappoint,500;min_price,55;max_price,55;uptime,55;tags,640;actived,60;traffic,630;pubphones,630;contactinfo,630;content,630;delicacy,630;service,630;boss,630;canyin,630;roomdetails,630;decoration,630;nearbyhotels,630;nearbypoints,630;scenic,630;bedprice,630;specialty,630;remark,630;hotel_id,55;" loadedclick="0">
+	<DbDetails >
+<Index>hotel_id</Index>
+<DbTable>creator.ctu_hotels c left join creator.ctu_city c0 on c.cityname=c0.city_code left join creator.ctu_user c1 on c.manager_id=c1.user_id left join creator.ctu_chainbrand c2 on c.chain_id=c2.chain_id</DbTable>
+<Data>c.hotelname,c.mobile,c.phone,c0.city_name cityname,c.cityid,c.address,c.email,c.opendate,c.url,c.qq,c.star,c1.user_name manager_id,c.manager,c.chain_name,chain_name_cn chain_name,c.picture,c.album,c.mappoint,c.min_price,c.max_price,c.uptime,c.tags,c.actived,c.traffic,c.pubphones,c.contactinfo,c.content,c.delicacy,c.service,c.boss,c.canyin,c.roomdetails,c.decoration,c.nearbyhotels,c.nearbypoints,c.scenic,c.bedprice,c.specialty,c.remark,c.hotel_id</Data>
+<Order>hotel_id</Order></DbDetails>
+<DbDetails fcsm="1"><queryFormat xml:base="D:\3UCS\3UCS Server\layout\biztools\mysqlcfg.xml" id="tbpages">select %{data} from %{dbtable} where %{hotelonlys} %{where} order by %{order} limit %{StartRow},%{PgSize}</queryFormat></DbDetails>
+<operator refresh="1" initial="0" firstpage="0" prepage="0" nextpage="0">
+<op text="modify"><DbDetails><Where>hotel_id='%{ctu_hotels_vLst[hotel_id]}'</Where></DbDetails><submit namelist="DbDetails" next="$this.ctu_hotels.ctu_hotelsLst"/><assign name="$this.ctu_hotels.frmwndctrl" expr="%{this}"/></op>
+<op text="delete" needconfirm="1"><DbDetails>
+<DbTable>creator.ctu_hotels</DbTable>
+<Where>hotel_id='%{ctu_hotels_vLst[hotel_id]}'</Where>
+<queryFormat>delete from %{table} where %{where}</queryFormat></DbDetails>
+<submit namelist="DbDetails"/><submit/></op>
+</operator>
+<OnChanged>
+<assign name="pgcur_ctu_hotels" expr="js(%{ctu_hotels_vLst[currentpage]}+1)"/>
+<assign name="pgscb_ctu_hotels" expr="js(%{ctu_hotels_vLst[currentpage]}+1)" function="SetSel"/>
+</OnChanged></ListCtrl>
+</Ctrls></GroupBox>

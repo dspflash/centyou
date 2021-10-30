@@ -1,0 +1,12 @@
+﻿<GroupBox Name="GBDVctu_pano" cols="xs12 sm12 md12 lg12" visible="0"><Ctrls>
+<ListCtrl Name="ctu_panoLst" ToolTip="ttp_ctu_pano" Size="70,20" visible="0" loadedclick="1">
+	<DbDetails fcsm="1">
+<Index>pano_id</Index>
+<DbTable>creator.ctu_pano</DbTable>
+<Data>path,img,pano,info,lats,latn,reftbl,refkey,refid,pano_id,shortid,visited,lastvisitdt</Data>
+<Order>pano_id</Order></DbDetails>
+<OnClick>
+<if cond="'%{pano_id}'"><SetVisible name="insertctu_pano" Visible="0"/><SetVisible name="modifyctu_pano" Visible="1"/></if>
+</OnClick>
+</ListCtrl>
+</Ctrls></GroupBox>

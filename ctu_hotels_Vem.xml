@@ -1,0 +1,13 @@
+<WndTap Name="ctu_hotels" Text="ctu_hotels" Ver="2">
+<var name="refreshAfterEdit" expr="0"/>
+<var name="dataRequired" expr="hotelname"/>
+<var name="dataRequireless" expr=""/>
+<xi:include href="lan\ctu_hotels.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+<Ctrls>
+<GroupBox  Name="GBctu_hotels" id="ctu_hotels" Text="ctu_hotels" Size="100,100"><Ctrls>
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="ctu_hotels_GBDEDIT.xml"/>
+<BR AutoHeight="1"/><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="ctu_hotels_GBOPEm.xml"/>
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="ctu_hotels_Vh.xml"/></Ctrls></GroupBox></Ctrls>
+	<OnChanged></OnChanged>
+	<OnActivate><SetVisible name="insertctu_hotels" Visible="1"/><SetVisible name="modifyctu_hotels" Visible="0"/></OnActivate>
+</WndTap>

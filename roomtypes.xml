@@ -1,0 +1,215 @@
+﻿<WndTap Name="roomtype" Text="客房类别">
+	<var name="hotelid" expr="0"/>
+	<var name="ChangeId" expr="0"/>
+	<Ctrls>
+		<GroupBox Name="GroupBox1" Visible="true" Enabled="true" Text="客房类别"><Ctrls>
+		<Label Name="lb_name" Visible="true" Enabled="true" Size="50,20" Text="房间类型"/>
+		<TextBox Name="TB_name_rmtp" Visible="true" Enabled="true" ReadOnly="false" Size="100,20" Text=""/>
+		<TAB/>
+		<Label Name="lb_num" Visible="true" Enabled="true" Size="50,20" Text="总数"/>
+		<TextBox Name="TB_num_rmtp" Visible="true" Enabled="true" ReadOnly="false" Size="50,20" Text=""/>
+		<TAB/>
+		<Label Name="lb_url" Visible="true" Enabled="true" Size="50,20" Text="房间图片"/>
+		<TextBox Name="TB_url_rmtp" Visible="true" Enabled="true" ReadOnly="false" Size="150,20" Text=""/>
+		<TAB/>
+		<ComboBox Name="InService" Visible="true" Enabled="true" Size="80,100" Type="3" Items="可编辑|审核中|发布中" SelectedIndex="1"></ComboBox>
+		<TextBox Name="TB_code_rmtp" Visible="false" Enabled="false" ReadOnly="false" Size="30,20" Text="">
+			<DbDetails>
+				<DbTable></DbTable>
+				<Index></Index>
+				<Data></Data>
+				<Order></Order>
+				<Where>hotel_id=%{hotelid}</Where>
+				<queryFormat>select roomtypeid from creator.ctu_roomtype %{where} order by roomtypeid desc limit 0,1</queryFormat> 
+				</DbDetails>
+			<OnEnChange><if cond="%{TB_code_rmtp}"><DbDetails></DbDetails><submit next="rmprllst" namelist="DbDetails" method="post"/>
+			<else/><submit next="rmprllst" method="post" function="resetcontent"/></if></OnEnChange>
+			</TextBox>
+		<TAB/>
+		<BR/>
+		<Label Name="lb_name" Visible="true" Enabled="true" Size="50,20" Text="房型概况"/>
+		<TextBox Name="TB_detail_rmtp" Visible="true" Enabled="true" ReadOnly="false" Size="650,20" Text=""/>
+		<TAB/>
+		<BR/>
+		<ListCtrl Name="rmtplst" Visible="true" Enabled="true" Size="600,100" autosizecol="1" Sum="0,1" sumcols="4"
+			Heading="房型,100;描述,200;房型图片URL,300;数量,30;">
+			<DbDetails>
+				<DbTable>creator.ctu_roomtype</DbTable>
+				<Data>roomtype,description,roomurl,num,actived,roomtypeid</Data>
+				<Order>order by roomtypeid</Order>
+				<Where>where hotel_id=%{hotelid}</Where>
+				<queryFormat>select %{data} from %{dbtable} %{where} %{order}</queryFormat> 
+			</DbDetails>
+			<OnClick>
+				<assign name="TB_code_rmtp" expr="%{rmtplst[roomtypeid]}" function="SetText"/>
+				<assign name="TB_name_rmtp" expr="%{rmtplst[roomtype]}" function="SetText"/>
+				<assign name="TB_detail_rmtp" expr="%{rmtplst[description]}" function="SetText"/>
+				<assign name="TB_url_rmtp" expr="%{rmtplst[roomurl]}" function="SetText"/>
+				<assign name="TB_num_rmtp" expr="%{rmtplst[num]}" function="SetText"/>
+				<assign name="InService" expr="%{rmtplst[actived]}" function="SetSel"/>
+				<if cond="%{purview}!=127">
+				<if cond="%{rmtplst[actived]}"><SetVisible name="update" Visible="0"/><else/><SetVisible name="update" Visible="1"/></if>
+				</if></OnClick>
+		</ListCtrl>
+		<TAB/><GroupBox Name="GroupBox1Child" Visible="true" Enabled="true" Text="操作"><Ctrls>
+		<Button Name="insert" Visible="true" Enabled="true" Size="80,20" Text="新增" ToolTip="增加一个房型">
+			<OnClick>
+			<if cond="!%{TB_name_rmtp}"><alert next="TB_name_rmtp" expr="%{lb_name}不能为空"/>
+			<else/><DbDetails><queryFormat>insert into creator.ctu_roomtype (hotel_id,roomtype,description,roomurl,num) values(%{hostels.TB_code},'%{TB_name_rmtp}','%{TB_detail_rmtp}','%{TB_url_rmtp}',%{TB_num_rmtp})</queryFormat></DbDetails><submit next="insert" namelist="DbDetails" method="post"/>
+			<DbDetails><Where>where hotel_id=%{hotelid}</Where></DbDetails><submit next="TB_code_rmtp" namelist="DbDetails" method="post"/>
+			<submit next="search" method="post" function="click"/>
+			<assign name="ChangeId" expr="%{ChangeId}+1"/>
+			</if></OnClick></Button>
+		<TAB/>
+		<Button Name="search" Visible="true" Enabled="true" Size="80,20" Text="刷新">
+			<OnClick><DbDetails></DbDetails><submit next="rmtplst" namelist="DbDetails" method="post"/></OnClick>
+			</Button>
+		<BR/>
+		<Button Name="update" Visible="true" Enabled="true" Size="80,20" Text="修改" ToolTip="修改所选房型的参数，如名称、数量、房间概况或改变状态（可编辑、审核、发布）">
+			<OnClick><DbDetails><queryFormat>Update creator.ctu_roomtype set roomtype='%{TB_name_rmtp}',description='%{TB_detail_rmtp}',roomurl='%{TB_url_rmtp}',num=%{TB_num_rmtp},actived=%{InService[SelectedIndex]} where roomtypeid=%{TB_code_rmtp}</queryFormat></DbDetails><submit next="update" namelist="DbDetails" method="post"/>
+				<assign name="ChangeId" expr="%{ChangeId}+1"/><submit next="search" method="post" function="click"/></OnClick></Button>
+			</Ctrls></GroupBox>
+		</Ctrls></GroupBox>
+
+		<BR autoheight="1"/>
+		<GroupBox Name="GroupBox2" Visible="true" Enabled="true" Text="客房价格系列"><Ctrls>
+		<Label Name="lb_name" Visible="true" Enabled="true" Size="50,20" Text="所属区间"/>
+		<DateTime Name="DateBegin" Visible="true" Enabled="true" Size="100,20" Format="yyyy-MM-dd"/>
+		<DateTime Name="DateEnd" Visible="true" Enabled="true" Size="100,20" Format="yyyy-MM-dd" Text="2 months"/>
+		<TAB/>
+		<ComboBox Name="InServicePrl" Visible="true" Enabled="true" Size="80,100" Type="3" Items="可编辑|审核中|发布中" SelectedIndex="0"></ComboBox>
+		<TextBox Name="TB_code_rmprl" Visible="false" Enabled="false" ReadOnly="false" Size="30,20" Text="">
+			<DbDetails>
+				<DbTable></DbTable>
+				<Index></Index>
+				<Data></Data>
+				<Order></Order>
+				<Where>where id_roomType=%{TB_code_rmtp}</Where>
+				<queryFormat>select id from creator.ctu_roompricelist %{where} order by id desc limit 0,1</queryFormat> 
+				</DbDetails>
+			<OnEnChange><if cond="%{TB_code_rmprl}"><DbDetails></DbDetails><submit next="rmprilst" namelist="DbDetails" method="post"/>
+			<else/><submit next="rmprilst" method="post" function="resetcontent"/></if></OnEnChange>
+			</TextBox>       
+		<BR/>
+		<ListCtrl Name="rmprllst" Visible="true" Enabled="true" Size="600,100" Remark="Price list"
+			Heading="开始日期,80;结束日期,80;">
+			<DbDetails>
+				<DbTable>creator.ctu_roompricelist</DbTable>
+				<Data>FROM_UNIXTIME(dt_begin,'%Y-%m-%d') as dtBegin, FROM_UNIXTIME(dt_end,'%Y-%m-%d') as dtEnd, actived, id</Data>
+				<Order>order by id</Order>
+				<Where>where id_roomType=%{TB_code_rmtp}</Where>
+				<queryFormat>select %{data} from %{dbtable} %{where} %{order}</queryFormat> 
+			</DbDetails>
+			<OnClick>
+				<assign name="TB_code_rmprl" expr="%{rmprllst[id]}" function="SetText"/>
+				<assign name="DateBegin" expr="%{rmprllst[dtBegin]}" function="SetText"/>
+				<assign name="DateEnd" expr="%{rmprllst[dtEnd]}" function="SetText"/>
+				<assign name="InServicePrl" expr="%{rmprllst[actived]}" function="SetSel"/>
+				<if cond="%{purview}!=127">
+					<if cond="%{rmprllst[actived]}">
+					<SetVisible name="update1" Visible="0"/><SetVisible name="update2" Visible="0"/>
+					<else/>
+					<SetVisible name="update1" Visible="1"/><SetVisible name="update2" Visible="1"/>
+					</if>
+				</if></OnClick>
+		</ListCtrl>
+		<TAB/><GroupBox Name="GroupBox2Child" Visible="true" Enabled="true" Text="操作"><Ctrls>
+		<Button Name="insert1" Visible="true" Enabled="true" Size="80,20" Text="新增" ToolTip="对所选房型创建一个价格系列的时间区间，开始入住日期至结束入住日期">
+			<OnClick>
+			<if cond="!%{TB_name_rmtp}"><alert next="TB_name_rmtp" expr="%{lb_name}不能为空"/>
+			<else/><DbDetails><queryFormat>insert into creator.ctu_roompricelist (id_roomType, dt_begin, dt_end) values(%{TB_code_rmtp},UNIX_TIMESTAMP('%{DateBegin}'),UNIX_TIMESTAMP('%{DateEnd}'))</queryFormat></DbDetails><submit next="insert1" namelist="DbDetails" method="post"/>
+			<DbDetails></DbDetails><submit next="TB_code_rmprl" namelist="DbDetails" method="post"/>
+			<submit next="search1" method="post" function="click"/>
+			</if></OnClick></Button>
+		<TAB/>
+		<Button Name="search1" Visible="true" Enabled="true" Size="80,20" Text="刷新">
+			<OnClick><DbDetails></DbDetails><submit next="rmprllst" namelist="DbDetails" method="post"/></OnClick>
+			</Button>
+		<BR/>
+		<Button Name="update1" Visible="true" Enabled="true" Size="80,20" Text="修改" ToolTip="修改所选择价格系列的时间区间，开始入住日期至结束入住日期">
+			<OnClick><DbDetails><queryFormat>Update creator.ctu_roompricelist set id_roomType='%{TB_code_rmtp}',dt_begin=UNIX_TIMESTAMP('%{DateBegin}'),dt_end=UNIX_TIMESTAMP('%{DateEnd}'),actived=%{InServicePrl[SelectedIndex]} where id=%{TB_code_rmprl}</queryFormat></DbDetails><submit namelist="DbDetails" method="post"/>
+				<assign name="ChangeId" expr="%{ChangeId}+1"/><submit next="search1" method="post" function="click"/></OnClick></Button>
+			</Ctrls></GroupBox>
+		</Ctrls></GroupBox>
+
+		<BR autoheight="1"/>
+		<GroupBox Name="GroupBox3" Visible="true" Enabled="true" Text="客房价格"><Ctrls>
+		<Label Name="lb_name" Visible="true" Enabled="true" Size="100,20" Text="价格(周日~周六)"/>
+		<TextBox Name="TB_Price_0" Visible="true" Enabled="true" ReadOnly="false" Size="50,20" Text="" Number="1" tooltip="为方便修改，当周日价格变动时后面价格跟随变化，当编辑周一~周四、周六价格是其它无影响，编辑周五价格时周六随周五联动，">
+			<OnEnChange>
+				<assign name="TB_Price_1" expr="%{TB_Price_0}" function="SetText"/>
+				<assign name="TB_Price_2" expr="%{TB_Price_0}" function="SetText"/>
+				<assign name="TB_Price_3" expr="%{TB_Price_0}" function="SetText"/>
+				<assign name="TB_Price_4" expr="%{TB_Price_0}" function="SetText"/>
+				<assign name="TB_Price_5" expr="%{TB_Price_0}" function="SetText"/>
+				<assign name="TB_Price_6" expr="%{TB_Price_0}" function="SetText"/>
+				</OnEnChange></TextBox>
+		<TextBox Name="TB_Price_1" Visible="true" Enabled="true" ReadOnly="false" Size="50,20" Text="" Number="1"/>
+		<TextBox Name="TB_Price_2" Visible="true" Enabled="true" ReadOnly="false" Size="50,20" Text="" Number="1"/>
+		<TextBox Name="TB_Price_3" Visible="true" Enabled="true" ReadOnly="false" Size="50,20" Text="" Number="1"/>
+		<TextBox Name="TB_Price_4" Visible="true" Enabled="true" ReadOnly="false" Size="50,20" Text="" Number="1"/>
+		<TextBox Name="TB_Price_5" Visible="true" Enabled="true" ReadOnly="false" Size="50,20" Text="" Number="1">
+			<OnEnChange>
+				<assign name="TB_Price_6" expr="%{TB_Price_5}" function="SetText"/>
+				</OnEnChange></TextBox>
+		<TextBox Name="TB_Price_6" Visible="true" Enabled="true" ReadOnly="false" Size="50,20" Text="" Number="1"/>
+		<TextBox Name="TB_code_rmpri" Visible="false" Enabled="false" ReadOnly="false" Size="30,20" Text="" Number="1">
+				<DbDetails>
+				<DbTable></DbTable>
+				<Index></Index>
+				<Data></Data>
+				<Order></Order>
+				<Where>where id_roomPriceList=%{TB_code_rmprl}</Where>
+				<queryFormat>select id from creator.ctu_roompricelistitem %{where} order by id desc limit 0,1</queryFormat> 
+				</DbDetails>
+			</TextBox>       
+		<!--TAB/>
+		<ComboBox Name="InServicepri" Visible="true" Enabled="true" Size="80,100" Type="3" Items="可编辑|审核中|发布中" SelectedIndex="1"></ComboBox-->
+		<BR/>
+		<ListCtrl Name="rmprilst" Visible="true" Enabled="true" Size="600,100" Remark="Price Item list"
+			Heading="星期天,80;星期一,80;星期二,80;星期三,80;星期四,80;星期五,80;星期六,80;">
+			<DbDetails>
+				<DbTable>creator.ctu_roompricelistitem</DbTable>
+				<Data>Sunday, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, actived, id</Data>
+				<Order>order by id</Order>
+				<Where>where id_roomPriceList=%{TB_code_rmprl}</Where>
+				<queryFormat>select %{data} from %{dbtable} %{where} %{order}</queryFormat> 
+			</DbDetails>
+			<OnClick>
+				<assign name="TB_code_rmpri" expr="%{rmprilst[id]}" function="SetText"/>
+				<assign name="TB_Price_0" expr="%{rmprilst[Sunday]}" function="SetText"/>
+				<assign name="TB_Price_1" expr="%{rmprilst[Monday]}" function="SetText"/>
+				<assign name="TB_Price_2" expr="%{rmprilst[Tuesday]}" function="SetText"/>
+				<assign name="TB_Price_3" expr="%{rmprilst[Wednesday]}" function="SetText"/>
+				<assign name="TB_Price_4" expr="%{rmprilst[Thursday]}" function="SetText"/>
+				<assign name="TB_Price_5" expr="%{rmprilst[Friday]}" function="SetText"/>
+				<assign name="TB_Price_6" expr="%{rmprilst[Saturday]}" function="SetText"/>
+				<assign name="InServicepri" expr="%{rmprilst[actived]}" function="SetSel"/>
+				</OnClick>
+		</ListCtrl>
+		<TAB/><GroupBox Name="GroupBox3Child" Visible="true" Enabled="true" Text="操作"><Ctrls>
+		<Button Name="insert2" Visible="true" Enabled="true" Size="80,20" Text="新增" ToolTip="对所选房型的所选择的价格系列的时间区间，设定价格表，周日至周六的在这个时间段该房型对应价格">
+			<OnClick>
+			<if cond="!%{TB_name_rmtp}"><alert next="TB_name_rmtp" expr="%{lb_name}不能为空"/>
+			<else/><DbDetails><queryFormat>insert into creator.ctu_roompricelistitem (id_roomPriceList,Sunday, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday) values(%{TB_code_rmprl},%{TB_Price_0},%{TB_Price_1},%{TB_Price_2},%{TB_Price_3},%{TB_Price_4},%{TB_Price_5},%{TB_Price_6})</queryFormat></DbDetails><submit next="insert2" namelist="DbDetails" method="post"/>
+			<DbDetails></DbDetails><submit next="TB_code_rmpri" namelist="DbDetails" method="post"/>
+			<submit next="search2" method="post" function="click"/>
+			</if></OnClick></Button>
+		<TAB/>
+		<Button Name="search2" Visible="true" Enabled="true" Size="80,20" Text="刷新">
+			<OnClick><DbDetails></DbDetails><submit next="rmprilst" namelist="DbDetails" method="post"/></OnClick>
+			</Button>
+		<BR/>
+		<Button Name="update2" Visible="true" Enabled="true" Size="80,20" Text="修改" ToolTip="对所选房型的所选择的价格系列的时间区间的价格表进行修改，周日至周六的在这个时间段该房型对应价格">
+			<OnClick><DbDetails><queryFormat>Update creator.ctu_roompricelistitem set Sunday=%{TB_Price_0}, Monday=%{TB_Price_1}, Tuesday=%{TB_Price_2}, Wednesday=%{TB_Price_3}, Thursday=%{TB_Price_4}, Friday=%{TB_Price_5}, Saturday=%{TB_Price_6} where id=%{TB_code_rmpri}</queryFormat></DbDetails><submit next="update" namelist="DbDetails" method="post"/>
+				<assign name="ChangeId" expr="%{ChangeId}+1"/><submit next="search2" method="post" function="click"/></OnClick></Button>
+
+			</Ctrls></GroupBox>
+		</Ctrls></GroupBox>
+			
+	</Ctrls>
+	<OnActivate>
+		<if cond="'%{session.hotel_id}'&&(%{hotelid}!=%{session.hotel_id})">
+			<assign name="hotelid" expr="%{session.hotel_id}"/>
+			<DbDetails/><submit namelist="DbDetails" next="rmtplst"/></if></OnActivate>
+</WndTap>

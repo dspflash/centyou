@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<XI3uWnd>
+	<EventHandlers>
+		<EventHandler Event="ReceivedCall('%{callerid}')">
+		<assign name="contact.TB_mobile" expr="%{callerid}"/>
+		<assign name="contact.TB_callid" expr="%{input}"/>
+		<DbDetails><Where>where base_mobil='%{contact.TB_mobile}' or base_phone='%{contact.TB_mobile}'</Where></DbDetails><submit next="contact.ContactList" namelist="DbDetails" method="post"/>
+		</EventHandler>
+		<EventHandler Event="CallAlerting('%{input}')"
+		Handler="(contact.TB_callid)SetText(%{input});"/>
+		<EventHandler Event="CallDisconnected()"><assign name="topmost" expr="nis3ucs:USS|b"/>
+		</EventHandler>
+	</EventHandlers>
+	<!--EventTriggers>
+		<Trigger name="click" oneshot="0" Interval="10" dest="sms.search"></Trigger>
+		<Trigger name="click" oneshot="0" Interval="30" dest="sms.searchUserLst"></Trigger>
+	</EventTriggers-->
+	<WndTaps>
+		<xi:include href="hostelsOwer.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+		<xi:include href="rooms.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+	</WndTaps>
+</XI3uWnd>

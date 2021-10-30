@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<XI3uWnd debug="1">
+	<DbDetails>
+		<SubDriver>MySQL</SubDriver>
+		<Host>localhost</Host>
+		<database>creator</database>
+		<characterset>utf8</characterset>
+		<sqlMode>NO_BACKSLASH_ESCAPES</sqlMode>
+		<User>i3u</User>
+		<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" xpointer="pass" href="config/db.xml"/>
+		<config>select 168 as user_id,1 as hotel_id,127 as purview</config>
+		</DbDetails>
+	<EventHandlers>
+		<EventHandler Event="ReceivedCall('%{callerid}')">
+		<assign name="contact.TB_mobile" expr="%{callerid}"/>
+		<assign name="contact.TB_callid" expr="%{input}"/>
+		<DbDetails><Where>where base_mobil='%{contact.TB_mobile}' or base_phone='%{contact.TB_mobile}'</Where></DbDetails><submit next="contact.ContactList" namelist="DbDetails" method="post"/>
+		</EventHandler>
+		<EventHandler Event="CallAlerting('%{input}')"
+		Handler="(contact.TB_callid)SetText(%{input});"/>
+		<EventHandler Event="CallDisconnected()"><assign name="topmost" expr="nis3ucs:USS|b"/>
+		</EventHandler>
+	</EventHandlers>
+	<!--EventTriggers>
+		<Trigger name="click" oneshot="0" Interval="60" dest="resv.searchResvNew"></Trigger>
+	</EventTriggers-->
+	<!--EventTriggers>
+		<Trigger name="click" oneshot="0" Interval="10" dest="sms.search"></Trigger>
+		<Trigger name="click" oneshot="0" Interval="30" dest="sms.searchUserLst"></Trigger>
+	</EventTriggers-->
+	<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="lan\general.xml"/>
+	<WndTaps>
+		<xi:include href="ctu_hotels_Vm.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+		<xi:include href="ctu_pano_Vm.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+		<xi:include href="hostels.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+		<xi:include href="roomtypes.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+		<xi:include href="rooms.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+		<xi:include href="roomOccupancy.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+		<xi:include href="roomStatus.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+		<xi:include href="resv.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+		<xi:include href="bookin.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+		<xi:include href="bills.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+		<xi:include href="Reception.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+		<xi:include href="users.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+	</WndTaps>
+</XI3uWnd>

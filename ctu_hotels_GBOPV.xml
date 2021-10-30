@@ -1,0 +1,17 @@
+﻿<GroupBox cols="xs12 sm6 md4" Name="GBOPVctu_hotels" Size="100,100"><Ctrls>
+<Button Text="delete" ToolTip="ttp_deletectu_hotels" Name="deletectu_hotels" Size="50,20">
+	<OnClick>
+	<DbDetails fcsm="1">
+<DbTable>creator.ctu_hotels</DbTable>
+<Where>hotel_id='%{ctu_hotelsLst[hotel_id]}'</Where>
+<queryFormat>delete from %{table} where %{where}</queryFormat></DbDetails>
+	<submit namelist="DbDetails"/><submit next="searchctu_hotels" function="click"/>
+	</OnClick>
+	</Button><TAB/>
+<Button Text="refresh" ToolTip="ttp_refreshctu_hotels" Name="searchctu_hotels" Size="50,20">
+			  <OnClick><submit next="ctu_hotelsLst"/>	</OnClick>
+</Button>
+<TAB/><TAB/><Button Text="firstpage" Name="FPctu_hotelsLst" OnClick="(ctu_hotelsLst)GetPage(First)" Size="50,20"/>
+<TAB/><Button Text="prepage" Name="PREctu_hotelsLst" OnClick="(ctu_hotelsLst)GetPage(Pre)" Size="50,20"/>
+<TAB/><Button Text="nextpage" Name="NPctu_hotelsLst" OnClick="(ctu_hotelsLst)GetPage(Next)" Size="50,20"/>
+</Ctrls></GroupBox>

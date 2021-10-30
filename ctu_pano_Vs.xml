@@ -1,0 +1,32 @@
+﻿<GroupBox Name="GBDEDITctu_pano" text="Search" toggle="1"><Ctrls>
+<GroupBox Name="GB_path" Multiline="0" cols="xs12 sm6 md4"><Ctrls>
+<Label Name="lb_path" Size="60,20" Text="path" Align="Right" onload="init"/>
+<ComboBox Name="path" Size="170,100" Text="" Weight="170"  ToolTip="ttp_path" onload="init">
+	<DbDetails>
+<Index></Index>
+<DbTable></DbTable>
+<Data></Data>
+<Where></Where>
+<queryFormat>select * from . </queryFormat></DbDetails><DbDetails fcsm="1"><DbDatabase>D:\AppServ\www\cha\vr\pano</DbDatabase> <datatype>dir</datatype> </DbDetails><OnSelEndOk><submit next="img"/><submit next="pano"/></OnSelEndOk></ComboBox>
+</Ctrls></GroupBox>
+<GroupBox Name="GB_img" Multiline="0" cols="xs12 sm6 md4"><Ctrls>
+<Label Name="lb_img" Size="60,20" Text="img" Align="Right" onload="init"/>
+<ComboBox Name="img" Size="170,100" Text="" Weight="170"  ToolTip="ttp_img" onload="init">
+	<DbDetails>
+<Index></Index>
+<DbTable></DbTable>
+<Data></Data>
+<Where></Where>
+<queryFormat>select * from . where filetype=png</queryFormat></DbDetails><DbDetails fcsm="1"><DbDatabase>D:\AppServ\www\cha\vr\pano\%{path}</DbDatabase> <datatype>dir</datatype> </DbDetails></ComboBox>
+</Ctrls></GroupBox>
+<GroupBox Name="GB_pano" Multiline="0" cols="xs12 sm6 md4"><Ctrls>
+<Label Name="lb_pano" Size="60,20" Text="pano" Align="Right" onload="init"/>
+<ComboBox Name="pano" Size="170,100" Text="" Weight="170"  ToolTip="ttp_pano" onload="init">
+	<DbDetails>
+<Index></Index>
+<DbTable></DbTable>
+<Data></Data>
+<Where></Where>
+<queryFormat>select * from . where filetype=jpg</queryFormat></DbDetails><DbDetails fcsm="1"><DbDatabase>D:\AppServ\www\cha\vr\pano\%{path}</DbDatabase> <datatype>dir</datatype> </DbDetails></ComboBox>
+</Ctrls></GroupBox>
+</Ctrls></GroupBox>
